@@ -1,0 +1,1458 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>Smart Herb AI Lab — 기술 인수인계 문서</title>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 16mm 18mm 16mm;
+    @bottom-right {
+      content: counter(page) " / " counter(pages);
+      font-size: 9pt;
+      color: #888;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    color: #1a1a1a;
+    font-family: "Apple SD Gothic Neo", "Helvetica Neue", "Arial", sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.55;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body {
+    max-width: 100%;
+    padding: 0 0 40px;
+  }
+
+  h1, h2, h3, h4 {
+    font-weight: 600;
+    color: #1a1a1a;
+    line-height: 1.3;
+    page-break-after: avoid;
+  }
+
+  h1 {
+    font-size: 22pt;
+    margin-top: 0;
+    margin-bottom: 8px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #1a1a1a;
+  }
+
+  h2 {
+    font-size: 16pt;
+    margin-top: 28px;
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #d0d0d0;
+    page-break-before: auto;
+  }
+
+  h3 {
+    font-size: 12.5pt;
+    margin-top: 18px;
+    margin-bottom: 8px;
+    color: #2a2a2a;
+  }
+
+  h4 {
+    font-size: 11pt;
+    margin-top: 14px;
+    margin-bottom: 6px;
+    color: #444;
+  }
+
+  p {
+    margin: 8px 0 10px;
+  }
+
+  ul, ol {
+    margin: 8px 0 10px;
+    padding-left: 22px;
+  }
+  li {
+    margin: 3px 0;
+  }
+
+  blockquote {
+    margin: 12px 0;
+    padding: 8px 14px;
+    background: #fff8e6;
+    border-left: 3px solid #d6a920;
+    color: #5a4a10;
+    font-size: 10pt;
+  }
+  blockquote p { margin: 4px 0; }
+
+  /* Inline code */
+  code {
+    font-family: "SF Mono", "Menlo", "Consolas", "DejaVu Sans Mono", monospace;
+    font-size: 0.88em;
+    background: #f1f1f3;
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: #c7254e;
+  }
+
+  /* Code blocks */
+  pre {
+    font-family: "SF Mono", "Menlo", "Consolas", "DejaVu Sans Mono", monospace;
+    font-size: 8.5pt;
+    line-height: 1.4;
+    background: #f7f7f8;
+    border: 1px solid #e1e1e4;
+    border-radius: 4px;
+    padding: 10px 12px;
+    overflow: hidden;
+    white-space: pre;
+    page-break-inside: avoid;
+    margin: 10px 0;
+  }
+  pre code {
+    background: transparent;
+    padding: 0;
+    color: #1a1a1a;
+    font-size: inherit;
+  }
+
+  /* Tables */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 12px 0;
+    font-size: 9.5pt;
+    page-break-inside: avoid;
+  }
+  th, td {
+    border: 1px solid #d0d0d0;
+    padding: 6px 9px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: #f1f1f3;
+    font-weight: 600;
+  }
+  tr:nth-child(even) td {
+    background: #fafafa;
+  }
+
+  /* TOC list — render compact */
+  h2 + ol {
+    margin-top: 4px;
+  }
+
+  /* Horizontal rule */
+  hr {
+    border: 0;
+    border-top: 1px solid #d6d6d6;
+    margin: 24px 0;
+  }
+
+  /* Links — subtle for print */
+  a {
+    color: #1a4a8a;
+    text-decoration: none;
+  }
+
+  /* Header on first page */
+  .doc-header {
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  /* Strong */
+  strong {
+    font-weight: 600;
+    color: #000;
+  }
+
+  /* Em */
+  em {
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+<h1 id="smart-herb-ai-lab">Smart Herb AI Lab — 기술 인수인계 문서</h1>
+<blockquote>
+<p><strong>대상</strong>: 본 프로젝트를 인수받아 유지보수할 개발자<br />
+<strong>범위</strong>: 키오스크 웹앱 + 모바일 토큰 뷰어<br />
+<strong>최종 갱신</strong>: 2026-05-27</p>
+</blockquote>
+<hr />
+<h2 id="_1">목차</h2>
+<ol>
+<li><a href="#1-아키텍처-개요">아키텍처 개요</a></li>
+<li><a href="#2-디렉토리-구조">디렉토리 구조</a></li>
+<li><a href="#3-기술-스택-상세">기술 스택 상세</a></li>
+<li><a href="#4-핵심-모듈-설명">핵심 모듈 설명</a></li>
+<li><a href="#5-config-구조">Config 구조</a></li>
+<li><a href="#6-에셋-교체-규격">에셋 교체 규격</a></li>
+<li><a href="#7-빌드-및-배포">빌드 및 배포</a></li>
+<li><a href="#8-환경-요구사항">환경 요구사항</a></li>
+<li><a href="#9-알려진-이슈-및-제약사항">알려진 이슈 및 제약사항</a></li>
+<li><a href="#10-확장-가이드">확장 가이드</a></li>
+</ol>
+<hr />
+<h2 id="1">1. 아키텍처 개요</h2>
+<h3 id="_2">시스템 레벨 다이어그램</h3>
+<pre class="codehilite"><code>┌──────────────────────── KIOSK PC (Windows) ────────────────────────┐
+│                                                                      │
+│  ┌──────────────────────────────────────────────────────────┐      │
+│  │  Chrome (kiosk mode) — http://localhost:8080             │      │
+│  │  ┌──────────────────────────────────────────────────┐    │      │
+│  │  │  index.html (main.js)                            │    │      │
+│  │  │  ┌────────────────────────────────────────────┐  │    │      │
+│  │  │  │ StateMachine                               │  │    │      │
+│  │  │  │   ↓ transition                             │  │    │      │
+│  │  │  │ [Idle] → [SeedSelect] → [Analyzing] →      │  │    │      │
+│  │  │  │ [SeedPlant] → [Bloom] → [Card] → (loop)    │  │    │      │
+│  │  │  └────────────────────────────────────────────┘  │    │      │
+│  │  │                                                  │    │      │
+│  │  │  AppContext (shared singletons)                  │    │      │
+│  │  │  ├── HandTracker (MediaPipe Hands)               │    │      │
+│  │  │  ├── PoseTracker (MediaPipe Pose)                │    │      │
+│  │  │  ├── Webcam     (shared MediaStream)             │    │      │
+│  │  │  ├── AssetConfig (config/assets.json)            │    │      │
+│  │  │  └── AudioManager                                │    │      │
+│  │  └──────────────────────────────────────────────────┘    │      │
+│  └──────────────────────────────────────────────────────────┘      │
+│        ▲                                          ▲                  │
+│        │ HDMI                                     │ USB              │
+│  ┌─────┴────────┐                          ┌──────┴──────┐          │
+│  │ 95&quot; OLED 4K  │                          │ Webcam      │          │
+│  └──────────────┘                          │ (1080p)     │          │
+│                                              └─────────────┘          │
+└──────────────────────────────────────────────────────────────────────┘
+                                              │
+                                              │ Internet (WiFi)
+                                              ▼
+                                    ┌──────────────────────┐
+                                    │  Netlify (static)    │
+                                    │  /token.html         │
+                                    │  → Token3D viewer    │
+                                    └──────────────────────┘
+                                              ▲
+                                              │ QR scan
+                                    ┌──────────────────────┐
+                                    │  관람객 휴대폰         │
+                                    └──────────────────────┘
+</code></pre>
+
+<h3 id="_3">상태 머신 플로우</h3>
+<pre class="codehilite"><code>                        ┌────────────────────────────────┐
+                        │                                ▼
+                        │                          ┌──────────┐
+                        │                          │   IDLE   │
+                        │                          └─────┬────┘
+                        │           shoulderWidth &gt; threshold (2.5s)
+                        │                                │
+                        │                                ▼
+                        │                          ┌──────────────┐
+                        │                          │  SEED_SELECT │
+                        │                          │  (110 sphere)│
+                        │                          └─────┬────────┘
+                        │      seed proximity dwell 5s   │
+                        │                                ▼
+                        │                          ┌────────────┐
+                        │                          │ ANALYZING  │
+                        │                          │ (5s timer) │
+                        │                          └─────┬──────┘
+                        │                                │
+                        │                                ▼
+                        │                          ┌────────────┐
+                        │                          │ SEED_PLANT │
+                        │                          │ (video end)│
+                        │                          └─────┬──────┘
+                        │                                │
+                        │                                ▼
+                        │                          ┌──────────┐
+                        │                          │  BLOOM   │
+                        │                          │ (hand UI)│
+                        │                          └─────┬────┘
+                        │       gauge ≥ 99.5%             │
+                        │                                ▼
+                        │                          ┌──────────┐
+                        └──────────────────────────┤   CARD   │
+                              cardResetMs 30s     │ (QR+3D)  │
+                                                   └──────────┘
+</code></pre>
+
+<h3 id="_4">모듈 의존성 그래프</h3>
+<pre class="codehilite"><code>main.js
+  ├─ core/AssetConfig
+  ├─ core/AppContext
+  ├─ core/StateMachine
+  ├─ core/Webcam
+  ├─ core/HandTracker  (uses Webcam)
+  ├─ core/PoseTracker  (uses Webcam)
+  ├─ core/AudioManager
+  ├─ ui/Cursor
+  └─ states/*          (subclasses BaseState, use AppContext singletons)
+         │
+         └─ ui/SphereCarousel, ui/WebcamFeed, ui/Gauge,
+            ui/ParticleEffect, ui/Token3D, ui/cardBack
+
+token-main.js   (standalone, runs on visitor phones)
+  ├─ ui/Token3D
+  └─ ui/cardBack   (← shared with CardState)
+</code></pre>
+
+<p><strong>핵심 디자인 원칙</strong>:</p>
+<ul>
+<li>상태(states/)는 코어 싱글톤(core/)을 받기만 하고 직접 구성하지 않음 → 테스트 용이</li>
+<li>UI(ui/)는 상태/코어 모듈을 import 안 함 → 단방향 의존성</li>
+<li>cardBack.js는 키오스크와 모바일 양쪽이 import → 동일 렌더링 보장</li>
+</ul>
+<hr />
+<h2 id="2">2. 디렉토리 구조</h2>
+<pre class="codehilite"><code>smart-herb-lab/
+├── index.html                  # 키오스크 엔트리 HTML
+├── token.html                  # 모바일 토큰 뷰어 엔트리 HTML
+├── package.json                # npm 의존성 + 빌드 스크립트
+├── vite.config.js              # Vite 빌드 설정 (멀티 엔트리)
+├── .gitignore
+├── scripts/
+│   └── copy-static.mjs         # vite build 후 /assets, /config를 dist로 복사
+├── src/
+│   ├── main.js                 # 키오스크 부트스트랩 (StateMachine 초기화)
+│   ├── token-main.js           # 모바일 부트스트랩 (URL 파싱 + Token3D 표시)
+│   ├── core/
+│   │   ├── StateMachine.js     # 상태 전환 엔진 + 페이드
+│   │   ├── AppContext.js       # 공유 싱글톤 컨테이너 + 세션 페이로드
+│   │   ├── AssetConfig.js      # /config/assets.json 런타임 로더
+│   │   ├── Webcam.js           # getUserMedia 단일 인스턴스
+│   │   ├── HandTracker.js      # MediaPipe HandLandmarker 래퍼
+│   │   ├── PoseTracker.js      # MediaPipe PoseLandmarker 래퍼
+│   │   └── AudioManager.js     # Web Audio API 래퍼 (no-op friendly)
+│   ├── states/
+│   │   ├── BaseState.js        # enter/exit 라이프사이클 + 헬퍼
+│   │   ├── IdleState.js        # 0. 대기 — 환영 화면, 입장 감지
+│   │   ├── SeedSelectState.js  # 1. 씨앗 선택 — 구형 캐러셀 + proximity dwell
+│   │   ├── AnalyzingState.js   # 2. 분석 — 풀스크린 웹캠 + 파티클
+│   │   ├── SeedPlantState.js   # 3. 씨앗 심기 — 영상 자동 재생
+│   │   ├── BloomState.js       # 4. 꽃 개화 — 손 조이스틱 + 게이지
+│   │   └── CardState.js        # 5. 카드 — Token3D + QR
+│   ├── ui/
+│   │   ├── Cursor.js           # 호버 dwell 모드용 라벤더 커서 (현재 미사용)
+│   │   ├── WebcamFeed.js       # 웹캠 버블/풀스크린 컴포넌트
+│   │   ├── Gauge.js            # 하단 진행 바
+│   │   ├── ParticleEffect.js   # 가산 블렌드 파티클 (gather/disperse)
+│   │   ├── SphereCarousel.js   # 110 노드 구체 캐러셀 (Canvas 2D)
+│   │   ├── Token3D.js          # Three.js 코인 토큰 (양면 + 림)
+│   │   └── cardBack.js         # 카드 뒷면 캔버스 합성 (공용)
+│   └── styles/
+│       ├── fonts.css           # @font-face LGEIHeadline 400 + 600
+│       ├── main.css            # 키오스크 전체 스타일
+│       └── token.css           # 모바일 뷰어 스타일
+├── assets/                     # ⚠ Vite publicDir 아님. copy-static.mjs가 처리
+│   ├── fonts/
+│   │   ├── LGEIHeadline-Regular.otf
+│   │   └── LGEIHeadline-Semibold.otf
+│   ├── images/
+│   │   ├── air_purifier.png
+│   │   ├── dehumidifier.png
+│   │   ├── speaker.png
+│   │   ├── refrigerator.png
+│   │   ├── washer.png
+│   │   └── token-front.png      # 3D 토큰 앞면 이미지
+│   ├── videos/
+│   │   ├── seed/
+│   │   │   └── seed-planting.mp4  # 5가전 공용
+│   │   └── bloom/
+│   │       ├── speaker.mp4
+│   │       ├── dehumidifier.mp4
+│   │       └── air_purifier.mp4
+│   └── cards/                   # 카드 뒷면 이미지 15장 — 현재 비어있음
+└── config/
+    └── assets.json              # 마스터 매핑 + 타이밍 + 도메인 (런타임 로드)
+</code></pre>
+
+<hr />
+<h2 id="3">3. 기술 스택 상세</h2>
+<h3 id="_5">런타임 의존성</h3>
+<table>
+<thead>
+<tr>
+<th>패키지</th>
+<th>버전</th>
+<th>용도</th>
+<th>로드 방식</th>
+<th>라이선스</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>@mediapipe/tasks-vision</strong></td>
+<td>^0.10.14</td>
+<td>손/포즈 랜드마크 추적</td>
+<td>npm + WASM CDN</td>
+<td>Apache 2.0</td>
+</tr>
+<tr>
+<td><strong>three</strong></td>
+<td>^0.166.1</td>
+<td>WebGL 3D 토큰 렌더링</td>
+<td>npm</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><strong>qrcode</strong></td>
+<td>^1.5.4</td>
+<td>QR 코드 이미지 생성</td>
+<td>npm</td>
+<td>MIT</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_6">빌드 의존성</h3>
+<table>
+<thead>
+<tr>
+<th>패키지</th>
+<th>버전</th>
+<th>용도</th>
+<th>라이선스</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>vite</strong></td>
+<td>^5.4.0</td>
+<td>번들러 + dev 서버</td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><strong>Node.js</strong></td>
+<td>≥18 LTS</td>
+<td>빌드 런타임</td>
+<td>MIT</td>
+</tr>
+</tbody>
+</table>
+<h3 id="fetch">외부 자원 (런타임 fetch)</h3>
+<table>
+<thead>
+<tr>
+<th>자원</th>
+<th>URL</th>
+<th>비고</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>MediaPipe WASM</td>
+<td>cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm</td>
+<td>약 3MB. <strong>오프라인 운영 시 로컬 호스팅 필수</strong></td>
+</tr>
+<tr>
+<td>Hand 모델</td>
+<td>storage.googleapis.com/mediapipe-models/hand_landmarker</td>
+<td>약 7MB</td>
+</tr>
+<tr>
+<td>Pose 모델</td>
+<td>storage.googleapis.com/mediapipe-models/pose_landmarker_lite</td>
+<td>약 5MB</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠ <strong>인터넷 차단 환경에서 운영 시</strong>: WASM과 모델 파일을 다운로드하여 <code>/assets/mediapipe/</code>에 두고 <code>HandTracker.js</code>/<code>PoseTracker.js</code>의 URL 상수를 로컬 경로로 변경 필요.</p>
+</blockquote>
+<h3 id="_7">폰트</h3>
+<table>
+<thead>
+<tr>
+<th>파일</th>
+<th>weight</th>
+<th>위치</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LGEIHeadline-Regular.otf</td>
+<td>400</td>
+<td><code>/assets/fonts/</code></td>
+</tr>
+<tr>
+<td>LGEIHeadline-Semibold.otf</td>
+<td>600</td>
+<td><code>/assets/fonts/</code></td>
+</tr>
+</tbody>
+</table>
+<p><code>src/styles/fonts.css</code>에서 <code>@font-face</code>로 등록. CDN 사용 없음.</p>
+<hr />
+<h2 id="4">4. 핵심 모듈 설명</h2>
+<h3 id="41-corestatemachinejs">4.1 core/StateMachine.js</h3>
+<p><strong>역할</strong>: 상태 간 비동기 전환 + CSS 페이드 인/아웃 관리</p>
+<p><strong>주요 메서드</strong>:</p>
+<pre class="codehilite"><code class="language-js">register(name: string, state: BaseState): void
+transition(name: string, payload?: object): Promise&lt;void&gt;
+</code></pre>
+
+<p><strong>전환 시퀀스</strong>:</p>
+<pre class="codehilite"><code>1. transitioning = true (재진입 차단)
+2. currentName === name 이면 무시 (self-transition 가드)
+3. prev.exit(ctx) await
+4. prev.root에서 .is-active class 제거
+5. 800ms wait (CSS .state transition 시간과 동기화)
+6. prev.root.remove()
+7. next.enter(ctx, payload) await
+8. next.root.classList.add('is-active') → 페이드 인
+9. transitioning = false (finally)
+</code></pre>
+
+<p><strong>중요</strong>: <code>transition()</code> 내부에서 에러 시 <code>showFatalError()</code>로 빨간 오버레이를 띄움 → 키오스크 디버깅용.</p>
+<h3 id="42-statesbasestatejs">4.2 states/BaseState.js</h3>
+<p>모든 상태의 추상 부모 클래스.</p>
+<p><strong>제공 헬퍼</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>메서드</th>
+<th>동작</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>enter(ctx)</code></td>
+<td>자식이 super 호출. <code>&lt;section class="state state--{name}"&gt;</code> DOM 생성 + 마운트</td>
+</tr>
+<tr>
+<td><code>exit()</code></td>
+<td>RAF 취소 + disposers 실행 + <code>_loopRunning = false</code></td>
+</tr>
+<tr>
+<td><code>loop(fn)</code></td>
+<td>RAF 루프 등록. <code>fn(t)</code> 매 프레임 호출. exit 시 자동 정지</td>
+</tr>
+<tr>
+<td><code>after(ms, fn)</code></td>
+<td>setTimeout + disposers에 clearTimeout 등록</td>
+</tr>
+<tr>
+<td><code>observeTracker(tracker, fn)</code></td>
+<td>tracker.observe() 호출 + 자동 disposer 등록</td>
+</tr>
+</tbody>
+</table>
+<p><strong>RAF race condition 방지</strong>: <code>_loopRunning</code> 플래그를 tick <code>fn()</code> 호출 전후로 체크하여, fn 내부에서 transition을 부르고 즉시 exit가 호출돼도 다음 RAF가 스케줄되지 않도록 함.</p>
+<h3 id="43-corehandtrackerjs">4.3 core/HandTracker.js</h3>
+<p><strong>MediaPipe HandLandmarker 초기화</strong>:</p>
+<pre class="codehilite"><code class="language-js">const fileset = await FilesetResolver.forVisionTasks(MEDIAPIPE_WASM_BASE);
+this.landmarker = await HandLandmarker.createFromOptions(fileset, {
+  baseOptions: { modelAssetPath: MODEL_URL, delegate: 'GPU' },
+  numHands: 1,
+  runningMode: 'VIDEO',
+});
+</code></pre>
+
+<p><strong>프레임 처리</strong> (<code>_step()</code>):</p>
+<ol>
+<li><code>landmarker.detectForVideo(video, performance.now())</code> 호출</li>
+<li>21개 랜드마크 중:</li>
+<li><code>palm = hand[9]</code> (middle MCP, 손바닥 중심 대용)</li>
+<li><code>thumbTip = hand[4]</code>, <code>indexTip = hand[8]</code> (pinch 거리 계산)</li>
+<li><strong>EMA 스무딩</strong>: <code>state.x = α·raw + (1-α)·prevState.x</code> (α=0.4)</li>
+<li><strong>Pinch 히스테리시스</strong>:</li>
+</ol>
+<p><code>진입 임계값: pinchDist &lt; 0.035
+   유지 임계값: pinchDist &lt; 0.075</code></p>
+<p><strong>Public state</strong>:</p>
+<pre class="codehilite"><code class="language-js">this.state = {
+  present: boolean,
+  x: 0..1,        // 정규화, 미러링됨 (오른손이 화면 오른쪽)
+  y: 0..1,        // 정규화, top-left 기준
+  isPinching: boolean,
+  raw: Landmark[] | null,
+};
+</code></pre>
+
+<p><strong>Observer 패턴</strong>:</p>
+<pre class="codehilite"><code class="language-js">const dispose = handTracker.observe((state) =&gt; { ... });
+// dispose() 호출 시 구독 해제
+</code></pre>
+
+<h3 id="44-coreposetrackerjs">4.4 core/PoseTracker.js</h3>
+<p>손과 동일한 구조. 11/12번 어깨 랜드마크로 <code>shoulderWidth</code> 계산 (IdleState 입장 감지용), 15/16번 손목 중 더 위에 있는 것의 y 좌표를 <code>wristY</code>로 노출 (BloomState 조이스틱용).</p>
+<p><strong>키보드 mock</strong> (<code>enableMockFromKeyboard(true)</code>):</p>
+<ul>
+<li><code>P</code>: presence 토글</li>
+<li><code>↑/↓</code>: wristY ±0.05</li>
+</ul>
+<p>운영 환경에서 항상 활성화되어 있으나 키오스크엔 키보드가 없어 영향 없음. 스태프 QA용.</p>
+<h3 id="45-uispherecarouseljs">4.5 ui/SphereCarousel.js</h3>
+<p><strong>좌표계</strong>:</p>
+<ul>
+<li>110개 노드를 Fibonacci 황금나선으로 분포 (<code>y = 1 - i/(n-1)·2</code>, <code>phi = i·137.5°</code>)</li>
+<li>노드별 <code>base: [x, y, z] · RADIUS</code> (RADIUS = 1500)</li>
+</ul>
+<p><strong>그리디 분배 알고리즘</strong> (<code>_buildField</code>):</p>
+<pre class="codehilite"><code>무작위 순서로 슬롯 방문
+각 슬롯의 단위구 거리 0.48 이내 기존 슬롯들의 가전 ID를 forbidden set에 추가
+forbidden 외 가전 중 가장 적게 사용된 것 선택
+</code></pre>
+
+<p>→ 같은 가전이 시각적으로 인접할 확률 거의 0.</p>
+<p><strong>투영</strong> (<code>_draw</code> 내부):</p>
+<pre class="codehilite"><code class="language-js">// rotateY → rotateX → perspective
+const x1 = x0*cosY + z0*sinY;
+const z1 = -x0*sinY + z0*cosY;
+const y2 = y0*cosX - z1*sinX;
+const z2 = y0*sinX + z1*cosX;
+const scale = CAM_DISTANCE / (CAM_DISTANCE + z2 + RADIUS);
+const sx = cx + x1*scale;
+const sy = cy + y2*scale;
+</code></pre>
+
+<p><strong>두 가지 회전 모드</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>모드</th>
+<th>API</th>
+<th>사용처</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Delta 입력</td>
+<td><code>rotate(dx, dy)</code></td>
+<td>(현재 미사용)</td>
+</tr>
+<tr>
+<td>각속도 모드</td>
+<td><code>setAngularVel(vx, vy)</code></td>
+<td>SeedSelectState — 매 프레임 호출</td>
+</tr>
+</tbody>
+</table>
+<p><strong>외부 노출 API</strong>:</p>
+<pre class="codehilite"><code class="language-js">getProjectedItems(): Array&lt;{ node, sx, sy, scale, depth }&gt;
+setHighlight(slotId: number|null, progress: 0..1): void
+snapToCenter(): void   // 정확한 회전각 역산 후 lock
+unlock(): void
+</code></pre>
+
+<h3 id="46-statesseedselectstatejs-proximity">4.6 states/SeedSelectState.js — Proximity 인터랙션</h3>
+<p><strong>좌표 흐름</strong>:</p>
+<pre class="codehilite"><code>HandTracker.state.x/y (normalized 0..1)
+  ↓
+seedTargetX/Y (pixel space)
+  ↓ ease 0.18
+seedX/Y (pixel space)
+  ↓ pull from nearest item
+seedX/Y (adjusted)
+  ↓
+seed.style.left/top (DOM update)
+</code></pre>
+
+<p><strong>Proximity 검사</strong> (매 프레임):</p>
+<pre class="codehilite"><code class="language-js">for each p in carousel.getProjectedItems():
+  if p.depth &gt; 0.25 * RADIUS: continue   // 후방 반구 제외
+  dist = hypot(seedX - p.sx, seedY - p.sy)
+  if dist &lt; PROXIMITY_PX(220) and dist &lt; bestDist:
+    nearest = p
+</code></pre>
+
+<p><strong>자기 인력</strong>:</p>
+<pre class="codehilite"><code class="language-js">pullF = (1 - dist/PROXIMITY_PX) * MAGNET_STRENGTH(0.42)
+seedX += (p.sx - seedX) * pullF
+seedY += (p.sy - seedY) * pullF
+</code></pre>
+
+<p><strong>캐러셀 회전</strong>: 씨앗 X 오프셋을 각속도로 매핑</p>
+<pre class="codehilite"><code class="language-js">normX = (seedX - centerX) / (width/2)        // -1..+1
+mag = max(0, |normX| - DEADZONE(0.12)) / (1 - DEADZONE)
+vy = sign(normX) * mag * MAX_ROT_SPEED(0.02)
+carousel.setAngularVel(0, vy)
+</code></pre>
+
+<p><strong>Dwell</strong>: 동일 slotId 위에 5초간 머무르면 <code>_triggerAbsorb()</code> → 흰빛 burst + 캐러셀 페이드 → AnalyzingState.</p>
+<h3 id="47-statesbloomstatejs-currenttime">4.7 states/BloomState.js — 영상 currentTime 매핑</h3>
+<p><strong>핸드 조이스틱 모델</strong>:</p>
+<pre class="codehilite"><code>PoseTracker.state.wristY
+  &lt; UP_ZONE(0.4)   → direction = +1  (정방향)
+  &gt; DOWN_ZONE(0.6) → direction = -1  (역방향)
+  else             → direction = 0   (정지)
+</code></pre>
+
+<p><strong>영상 제어 (매 프레임)</strong>:</p>
+<pre class="codehilite"><code class="language-js">if (direction === 1) {
+  if (video.paused) video.play();
+} else {
+  if (!video.paused) video.pause();
+  if (direction === -1) {
+    const dt = (now - lastFrameTs) / 1000;
+    video.currentTime = max(0, video.currentTime - dt);
+  }
+}
+</code></pre>
+
+<blockquote>
+<p><strong>역재생 한계</strong>: HTML5 <code>&lt;video&gt;</code>는 negative playbackRate 미지원. 매 프레임 <code>currentTime -= dt</code>로 수동 seek. MP4 키프레임 간격(GOP)에 따라 디코더가 가장 가까운 키프레임에서 다시 디코딩해야 하므로 끊김 발생. 부드러운 역재생이 꼭 필요하면 영상을 all-keyframe (<code>-x264opts keyint=1</code>) 인코딩 필요 (파일 크기 5–10배).</p>
+</blockquote>
+<p><strong>Lock 조건</strong>: <code>progress &gt;= 0.995</code> → 손 입력 무시 + 끝까지 자연 재생 → <code>ended</code> 이벤트 → CardState.</p>
+<h3 id="48-uitoken3djs-threejs">4.8 ui/Token3D.js — Three.js 렌더링 파이프라인</h3>
+<p><strong>Scene 구조</strong>:</p>
+<pre class="codehilite"><code>Scene
+├── AmbientLight (1.0)
+├── DirectionalLight (0.45, position [2,3,4])
+└── tokenGroup (외부 회전 핸들)
+    └── coin (Mesh)
+        ├── CylinderGeometry(R=1, R=1, H=0.06, 96 segments)
+        └── materials[3]
+            ├── [0] side: MeshBasicMaterial(0xffffff)
+            ├── [1] top:  MeshBasicMaterial(map: frontTex)
+            └── [2] bottom: MeshBasicMaterial(map: backTex)
+</code></pre>
+
+<p><strong>텍스처 보정</strong>:</p>
+<pre class="codehilite"><code class="language-js">// CylinderGeometry top cap UV는 캔버스 top → 캡 +x로 매핑.
+// 즉 캔버스 상단의 그림이 디스크 오른쪽에 나옴.
+// 이를 텍스처 회전으로 보정:
+texture.center.set(0.5, 0.5);
+texture.rotation = Math.PI / 2;  // CCW 90°
+</code></pre>
+
+<p><strong>회전 보간</strong>:</p>
+<pre class="codehilite"><code class="language-js">loop = () =&gt; {
+  this.rotX += (this.targetRotX - this.rotX) * 0.2;
+  this.rotY += (this.targetRotY - this.rotY) * 0.2;
+  tokenGroup.rotation.set(rotX, rotY, 0);
+  renderer.render(scene, camera);
+  requestAnimationFrame(loop);
+};
+</code></pre>
+
+<p><strong>Save-as-image</strong> (<code>preserveDrawingBuffer: true</code> 필요):</p>
+<pre class="codehilite"><code class="language-js">canvas.toDataURL('image/png')  // → download link
+</code></pre>
+
+<h3 id="49-uiparticleeffectjs">4.9 ui/ParticleEffect.js</h3>
+<p><strong>Glow stamp 사전 베이크</strong>:</p>
+<pre class="codehilite"><code class="language-js">constructor() {
+  this._stamp = (96×96 canvas)
+  radial-gradient(0: white, 0.55: lavender, 1: transparent)
+}
+</code></pre>
+
+<p><strong>렌더</strong>:</p>
+<ul>
+<li><code>mixBlendMode: 'lighter'</code> (가산)</li>
+<li>매 프레임 240개 입자에 대해 <code>drawImage(this._stamp, x, y, size, size)</code></li>
+<li>입자별 <code>phase</code>, <code>radius</code>, <code>speed</code>, <code>bright</code>로 비대칭 모션</li>
+</ul>
+<p><strong>Gather/disperse 사이클</strong>:</p>
+<pre class="codehilite"><code class="language-js">const gather = (1 - cos(t * 0.0009)) / 2;       // 0..1, 3.5s 주기
+const collapse = 0.25 + 0.65 * gather;
+const effectiveR = baseRadius * (1 - collapse * 0.8);
+</code></pre>
+
+<h3 id="410-uicardbackjs">4.10 ui/cardBack.js — 공용 합성</h3>
+<p>키오스크 CardState와 모바일 token-main 양쪽이 import.</p>
+<pre class="codehilite"><code class="language-js">buildBackCanvas({ cardImage, dateStr, applianceName, size = 720 }) → HTMLCanvasElement
+</code></pre>
+
+<p>수행 단계:</p>
+<ol>
+<li>720×720 캔버스 → 원형 클립</li>
+<li>카드 이미지 cover-fit, 없으면 라벤더 그라데이션</li>
+<li><code>drawCircularText(ctx, dateStr, top arc)</code> — 상단 호</li>
+<li><code>drawCircularText(ctx, applianceName, bottom arc)</code> — 하단 호</li>
+</ol>
+<p>각 문자는 <code>ctx.measureText</code>로 너비 측정 → 호 위치 계산 → <code>rotate + translate</code> 후 그림. 하단은 reading direction을 위해 <code>rotate(θ - π/2) + translate(0, +r)</code> 사용.</p>
+<h3 id="411-qr-statescardstatejs">4.11 QR 생성 (states/CardState.js)</h3>
+<pre class="codehilite"><code class="language-js">const base = ctx.config.data.tokenViewerBase;
+const url = `${base}?a=${id}&amp;f=${flowerKey}&amp;d=${isoDate}`;
+qrImg.src = await QRCode.toDataURL(url, { margin: 0, width: 200 });
+</code></pre>
+
+<p>QR 데이터 모드는 자동 선택 (URL이므로 alphanumeric mode가 효율적). 에러 정정 레벨 기본값 <code>M</code>.</p>
+<hr />
+<h2 id="5-config">5. Config 구조</h2>
+<p><strong>경로</strong>: <code>/config/assets.json</code><br />
+<strong>로드</strong>: <code>AssetConfig.load(url)</code> → <code>fetch(url, { cache: 'no-store' })</code> 매 페이지 로드 시<br />
+<strong>핫 리로드</strong>: 키오스크 Chrome에서 F5 누르면 즉시 반영</p>
+<h3 id="_8">스키마</h3>
+<pre class="codehilite"><code class="language-json">{
+  &quot;appliances&quot;: [
+    {
+      &quot;id&quot;: &quot;air_purifier&quot;,
+      &quot;name&quot;: &quot;공기청정기&quot;,
+      &quot;image&quot;: &quot;/assets/images/air_purifier.png&quot;,
+      &quot;seedVideo&quot;: &quot;/assets/videos/seed/seed-planting.mp4&quot;,
+      &quot;flowers&quot;: {
+        &quot;A&quot;: {
+          &quot;bloomVideo&quot;: &quot;/assets/videos/bloom/air_purifier.mp4&quot;,
+          &quot;card&quot;: &quot;/assets/cards/air_purifier_A.png&quot;
+        },
+        &quot;B&quot;: { &quot;bloomVideo&quot;: &quot;...&quot;, &quot;card&quot;: &quot;...&quot; },
+        &quot;C&quot;: { &quot;bloomVideo&quot;: &quot;...&quot;, &quot;card&quot;: &quot;...&quot; }
+      }
+    }
+  ],
+  &quot;timings&quot;: {
+    &quot;idleEntryDwellMs&quot;: 2500,
+    &quot;seedSelectDwellMs&quot;: 5000,
+    &quot;analyzingMs&quot;: 5000,
+    &quot;cardResetMs&quot;: 30000
+  },
+  &quot;tokenFront&quot;: &quot;/assets/images/token-front.png&quot;,
+  &quot;tokenViewerBase&quot;: &quot;https://tiny-cupcake-d0b31b.netlify.app/token.html&quot;,
+  &quot;detection&quot;: {
+    &quot;shoulderWidthEnterThreshold&quot;: 0.22,
+    &quot;shoulderWidthExitThreshold&quot;: 0.14
+  }
+}
+</code></pre>
+
+<h3 id="_9">수정 가능한 값 요약</h3>
+<table>
+<thead>
+<tr>
+<th>키</th>
+<th>기본값</th>
+<th>영향</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>appliances[].id</code></td>
+<td>—</td>
+<td>코드 참조용 안정 키. <strong>변경 금지</strong></td>
+</tr>
+<tr>
+<td><code>appliances[].name</code></td>
+<td>—</td>
+<td>화면 라벨. 자유롭게 변경</td>
+</tr>
+<tr>
+<td><code>appliances[].image</code></td>
+<td>—</td>
+<td>파일 경로. 새 파일 교체 시 갱신</td>
+</tr>
+<tr>
+<td><code>appliances[].seedVideo</code></td>
+<td>—</td>
+<td>가전별 다르게 둘 수도 있음</td>
+</tr>
+<tr>
+<td><code>appliances[].flowers[A/B/C]</code></td>
+<td>—</td>
+<td>꽃 변형. A/B/C 외 키 추가 시 코드 수정 필요</td>
+</tr>
+<tr>
+<td><code>timings.idleEntryDwellMs</code></td>
+<td>2500</td>
+<td>ms</td>
+</tr>
+<tr>
+<td><code>timings.seedSelectDwellMs</code></td>
+<td>5000</td>
+<td>proximity 5초</td>
+</tr>
+<tr>
+<td><code>timings.analyzingMs</code></td>
+<td>5000</td>
+<td></td>
+</tr>
+<tr>
+<td><code>timings.cardResetMs</code></td>
+<td>30000</td>
+<td></td>
+</tr>
+<tr>
+<td><code>tokenFront</code></td>
+<td><code>/assets/images/token-front.png</code></td>
+<td>앞면 이미지 교체 시</td>
+</tr>
+<tr>
+<td><code>tokenViewerBase</code></td>
+<td>Netlify URL</td>
+<td><strong>배포 도메인 변경 시 반드시 갱신</strong></td>
+</tr>
+<tr>
+<td><code>detection.shoulderWidthEnterThreshold</code></td>
+<td>0.22</td>
+<td>0.0~1.0. 낮을수록 멀리서도 감지</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6">6. 에셋 교체 규격</h2>
+<h3 id="_10">영상</h3>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>권장 사양</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>컨테이너</td>
+<td><code>.mp4</code></td>
+</tr>
+<tr>
+<td>비디오 코덱</td>
+<td><strong>H.264 baseline profile</strong> (<code>-profile:v baseline</code>)</td>
+</tr>
+<tr>
+<td>오디오</td>
+<td>없음 또는 AAC (현재 음소거 재생)</td>
+</tr>
+<tr>
+<td>해상도</td>
+<td>1920×1080 (또는 4K 3840×2160)</td>
+</tr>
+<tr>
+<td>프레임레이트</td>
+<td>30fps</td>
+</tr>
+<tr>
+<td>비트레이트</td>
+<td>4–8 Mbps</td>
+</tr>
+<tr>
+<td>길이</td>
+<td>5–15초</td>
+</tr>
+<tr>
+<td>파일 크기</td>
+<td>≤ 20 MB (개당)</td>
+</tr>
+<tr>
+<td>키프레임 간격</td>
+<td>기본 OK (역재생 안 쓰면), all-I 인코딩이면 5–10× 커짐</td>
+</tr>
+</tbody>
+</table>
+<p><strong>FFmpeg 변환 예시</strong>:</p>
+<pre class="codehilite"><code class="language-bash">ffmpeg -i input.mov -c:v libx264 -profile:v baseline -level 3.0 \
+  -pix_fmt yuv420p -vf scale=1920:1080 -r 30 -b:v 6M -an output.mp4
+</code></pre>
+
+<h3 id="_11">이미지</h3>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>권장 사양</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>가전 이미지 (캐러셀)</td>
+<td>PNG, 투명 배경, 1024×1024 정사각, &lt; 2 MB</td>
+</tr>
+<tr>
+<td>토큰 앞면</td>
+<td>PNG, 1024×1024 정사각, 가장자리까지 꽉 채움 권장</td>
+</tr>
+<tr>
+<td>카드 뒷면</td>
+<td>PNG/JPG, 1080×1080 정사각, &lt; 3 MB</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_12">폰트</h3>
+<ul>
+<li>OTF 또는 TTF</li>
+<li><code>@font-face</code> 등록: <code>src/styles/fonts.css</code> 직접 수정</li>
+<li>새 weight 추가 시 weight 값 명시 (<code>font-weight: 400/600/...</code>)</li>
+</ul>
+<hr />
+<h2 id="7">7. 빌드 및 배포</h2>
+<h3 id="71">7.1 로컬 개발</h3>
+<pre class="codehilite"><code class="language-bash"># 의존성 설치 (최초 1회)
+npm install
+
+# Vite dev 서버 (HMR)
+npm run dev
+# → http://localhost:5173
+
+# 모바일 뷰어 테스트
+# → http://localhost:5173/token.html?a=speaker&amp;f=A&amp;d=2026-05-27
+</code></pre>
+
+<h3 id="72">7.2 프로덕션 빌드</h3>
+<pre class="codehilite"><code class="language-bash">npm run build
+</code></pre>
+
+<p>수행 단계:</p>
+<ol>
+<li><code>vite build</code> — TypeScript/JS 번들링 → <code>dist/</code></li>
+<li><code>node scripts/copy-static.mjs</code> — <code>/assets</code>, <code>/config</code>를 <code>dist/</code>로 복사</li>
+</ol>
+<p><strong>copy-static.mjs가 필요한 이유</strong>: 런타임 <code>fetch('/config/assets.json')</code> + 직접 <code>&lt;video src&gt;</code> 사용으로 Vite가 의존성 분석을 못 함. 빌드 후 별도 복사 필요.</p>
+<p><strong>결과물</strong>:</p>
+<pre class="codehilite"><code>dist/
+├── index.html
+├── token.html
+├── assets/          (원본에서 복사됨)
+├── config/          (원본에서 복사됨)
+├── assets/index-[hash].js
+├── assets/index-[hash].css
+└── assets/token-[hash].js
+</code></pre>
+
+<h3 id="73-netlify">7.3 Netlify 배포 (모바일 뷰어)</h3>
+<pre class="codehilite"><code class="language-bash">npm run build
+# dist/ 폴더를 https://app.netlify.com/drop 에 드래그
+</code></pre>
+
+<p><code>tokenViewerBase</code> 값을 Netlify가 발급한 URL로 갱신 후 재빌드/재배포.</p>
+<h3 id="74-pc-windows">7.4 키오스크 PC 배포 (Windows)</h3>
+<p><strong>파일 복사</strong>:</p>
+<pre class="codehilite"><code>C:\smart-herb-lab\
+  └── dist\       ← npm run build 결과를 SFTP로 옮김
+</code></pre>
+
+<p><strong>HTTP 서버 (serve 패키지)</strong>:</p>
+<pre class="codehilite"><code class="language-cmd">npm install -g serve
+</code></pre>
+
+<p><strong>키오스크 시작 배치 파일</strong> (<code>C:\smart-herb-lab\start.bat</code>):</p>
+<pre class="codehilite"><code class="language-bat">@echo off
+start /b &quot;&quot; serve &quot;C:\smart-herb-lab\dist&quot; -l 8080
+timeout /t 2 /nobreak &gt;nul
+start &quot;&quot; &quot;C:\Program Files\Google\Chrome\Application\chrome.exe&quot; ^
+  --kiosk ^
+  --use-fake-ui-for-media-stream ^
+  --autoplay-policy=no-user-gesture-required ^
+  --noerrdialogs ^
+  --disable-pinch ^
+  --overscroll-history-navigation=0 ^
+  --disable-features=TranslateUI ^
+  http://localhost:8080
+</code></pre>
+
+<p><strong>자동 시작 등록</strong>:</p>
+<ol>
+<li><code>Win + R</code> → <code>shell:startup</code></li>
+<li>위 .bat 파일의 바로가기를 해당 폴더에 복사</li>
+</ol>
+<p><strong>SFTP 콘텐츠 갱신</strong>:</p>
+<pre class="codehilite"><code>C:\smart-herb-lab\dist\assets\videos\bloom\ 에 새 .mp4 업로드
+C:\smart-herb-lab\dist\config\assets.json 의 경로 갱신 (필요 시)
+키오스크 Chrome에서 F5 → 즉시 반영
+</code></pre>
+
+<hr />
+<h2 id="8">8. 환경 요구사항</h2>
+<h3 id="pc">키오스크 PC</h3>
+<table>
+<thead>
+<tr>
+<th>항목</th>
+<th>최소</th>
+<th>권장</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OS</td>
+<td>Windows 10 64bit</td>
+<td>Windows 11</td>
+</tr>
+<tr>
+<td>CPU</td>
+<td>Intel i5 8세대 / AMD Ryzen 5</td>
+<td>i7 10세대+</td>
+</tr>
+<tr>
+<td>RAM</td>
+<td>8 GB</td>
+<td>16 GB</td>
+</tr>
+<tr>
+<td>GPU</td>
+<td>Intel UHD 630 (WebGL 2 지원 필수)</td>
+<td>GTX 1650+ (MediaPipe GPU delegate)</td>
+</tr>
+<tr>
+<td>저장</td>
+<td>SSD 128 GB</td>
+<td>SSD 256 GB+</td>
+</tr>
+<tr>
+<td>USB</td>
+<td>USB 3.0 ×1</td>
+<td>USB 3.0 ×2</td>
+</tr>
+<tr>
+<td>HDMI</td>
+<td>2.0 (4K 60Hz)</td>
+<td>2.0+</td>
+</tr>
+<tr>
+<td>Chrome</td>
+<td>120+</td>
+<td>자동 업데이트 잠금</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_13">디스플레이</h3>
+<ul>
+<li>LG 95" OLED, 4K (3840×2160) @ 60Hz</li>
+<li>HDMI 2.0 케이블</li>
+</ul>
+<h3 id="_14">웹캠</h3>
+<ul>
+<li>USB 2.0/3.0, 1080p 30fps 이상</li>
+<li>f/2.0 이하 밝은 렌즈 권장 (저조도 대응)</li>
+<li>자동 노출/화이트밸런스 비활성화 가능하면 안정성↑</li>
+</ul>
+<h3 id="_15">네트워크</h3>
+<ul>
+<li><strong>키오스크 자체는 인터넷 불필요</strong> (모든 에셋 로컬, MediaPipe WASM도 로컬 호스팅 가능)</li>
+<li><strong>관람객 QR 페이지 접근용</strong>: 안정적 WiFi 또는 4G/5G</li>
+<li>Chrome 자동 업데이트 차단을 위해 outbound 차단 권장</li>
+</ul>
+<hr />
+<h2 id="9">9. 알려진 이슈 및 제약사항</h2>
+<h3 id="91-mediapipe">9.1 MediaPipe 인식 한계</h3>
+<table>
+<thead>
+<tr>
+<th>조건</th>
+<th>동작</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>조도 &lt; 100 lux</td>
+<td>손 인식률 &lt; 60%, 권장 200+ lux</td>
+</tr>
+<tr>
+<td>카메라 ↔ 손 거리 &gt; 1.5m</td>
+<td>손 작아져 랜드마크 정확도↓</td>
+</tr>
+<tr>
+<td>손이 카메라 시야 밖</td>
+<td>자동 감지 안 됨 (cursor 사라짐, 정상)</td>
+</tr>
+<tr>
+<td>복수 인원</td>
+<td><code>numHands: 1</code> 설정 → 가장 큰 손 하나만 추적</td>
+</tr>
+<tr>
+<td>손바닥이 카메라에 평행</td>
+<td>pinch 거리 측정값이 부정확</td>
+</tr>
+<tr>
+<td>빠른 손 동작</td>
+<td>MediaPipe 30fps 기준 ~33ms 지연, 빠른 동작 미스 가능</td>
+</tr>
+</tbody>
+</table>
+<p><strong>완화책</strong>:</p>
+<ul>
+<li>사용자 위치 표시 스티커 바닥 부착 (1m 거리 권장)</li>
+<li>전시장 조명 보강 (CRI 80+)</li>
+</ul>
+<h3 id="92">9.2 영상 재생 제약</h3>
+<table>
+<thead>
+<tr>
+<th>이슈</th>
+<th>원인</th>
+<th>완화책</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>역재생 끊김</td>
+<td><code>&lt;video currentTime</code> 수동 seek는 키프레임에서 다시 디코딩</td>
+<td>all-I 인코딩 (파일 5–10× 커짐) 또는 forward-only 인터랙션</td>
+</tr>
+<tr>
+<td>자동재생 실패</td>
+<td>autoplay policy</td>
+<td><code>--autoplay-policy=no-user-gesture-required</code> 플래그</td>
+</tr>
+<tr>
+<td>첫 프레임 검은 화면</td>
+<td>preload 안 끝남</td>
+<td><code>currentTime = 0.001</code>로 강제 seek (BloomState 적용됨)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="93-webglcanvas">9.3 WebGL/Canvas 퍼포먼스 병목</h3>
+<table>
+<thead>
+<tr>
+<th>지점</th>
+<th>부하</th>
+<th>측정</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SphereCarousel 110개 노드 매 프레임</td>
+<td>Canvas 2D drawImage ×110 + 투영 계산</td>
+<td>1080p에서 ~5ms/frame, 4K에서 ~12ms/frame</td>
+</tr>
+<tr>
+<td>ParticleEffect 240개 입자</td>
+<td>drawImage ×240 + 가산 블렌딩</td>
+<td>~3ms/frame</td>
+</tr>
+<tr>
+<td>Token3D 매 프레임</td>
+<td>Three.js ~50 vertices</td>
+<td>&lt;1ms/frame</td>
+</tr>
+<tr>
+<td>MediaPipe Hand 추적</td>
+<td>GPU delegate, 30fps</td>
+<td>~15ms/frame</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>4K에서 60fps 유지하려면 GPU dedicated 권장. iGPU에서는 30fps cap 또는 캐러셀 노드 수 축소 (110→70) 고려.</p>
+</blockquote>
+<h3 id="94">9.4 메모리</h3>
+<ul>
+<li>24시간 가동 시 V8 heap 약간씩 증가 (MediaPipe inference 누적)</li>
+<li><strong>권장 운영</strong>: 매일 새벽 Chrome 재시작 (Task Scheduler)</li>
+</ul>
+<h3 id="95">9.5 카메라 끊김</h3>
+<ul>
+<li>웹캠 USB 빠지면 <code>getUserMedia</code> 스트림 만료 → 모든 인터랙션 멈춤</li>
+<li>현재 자동 복구 로직 없음 → 향후 <code>mediaTrack.onended</code> 핸들러 추가 검토</li>
+</ul>
+<h3 id="96-token3d-preservedrawingbuffer">9.6 Token3D preserveDrawingBuffer</h3>
+<ul>
+<li>WebGL 컨텍스트가 매 프레임 버퍼 보존 → 약 5–10% perf 손실</li>
+<li>모바일 뷰어의 "이미지로 저장" 기능 위해 필수</li>
+</ul>
+<hr />
+<h2 id="10">10. 확장 가이드</h2>
+<h3 id="101">10.1 가전 추가 (예: "에어컨")</h3>
+<p><strong>1. 에셋 준비</strong>:</p>
+<pre class="codehilite"><code>assets/images/aircon.png
+assets/videos/seed/aircon.mp4   (또는 공용 seed-planting.mp4 재사용)
+assets/videos/bloom/aircon_A.mp4
+assets/videos/bloom/aircon_B.mp4
+assets/videos/bloom/aircon_C.mp4
+assets/cards/aircon_A.png
+assets/cards/aircon_B.png
+assets/cards/aircon_C.png
+</code></pre>
+
+<p><strong>2. config/assets.json에 추가</strong>:</p>
+<pre class="codehilite"><code class="language-json">{
+  &quot;id&quot;: &quot;aircon&quot;,
+  &quot;name&quot;: &quot;에어컨&quot;,
+  &quot;image&quot;: &quot;/assets/images/aircon.png&quot;,
+  &quot;seedVideo&quot;: &quot;/assets/videos/seed/seed-planting.mp4&quot;,
+  &quot;flowers&quot;: {
+    &quot;A&quot;: { &quot;bloomVideo&quot;: &quot;/assets/videos/bloom/aircon_A.mp4&quot;, &quot;card&quot;: &quot;/assets/cards/aircon_A.png&quot; },
+    &quot;B&quot;: { &quot;bloomVideo&quot;: &quot;/assets/videos/bloom/aircon_B.mp4&quot;, &quot;card&quot;: &quot;/assets/cards/aircon_B.png&quot; },
+    &quot;C&quot;: { &quot;bloomVideo&quot;: &quot;/assets/videos/bloom/aircon_C.mp4&quot;, &quot;card&quot;: &quot;/assets/cards/aircon_C.png&quot; }
+  }
+}
+</code></pre>
+
+<p><strong>3. 자동 적용 사항</strong>:</p>
+<ul>
+<li>SphereCarousel이 <code>REPEATS × appliances.length</code> 계산 → 자동으로 노드 수 증가 (6가전이면 132개)</li>
+<li>그리디 분배도 자동</li>
+<li>코드 수정 불필요</li>
+</ul>
+<h3 id="102-abc-abcd">10.2 꽃 변형 추가 (A/B/C → A/B/C/D)</h3>
+<p><code>AssetConfig.pickRandomFlowerKey()</code>가 하드코딩되어 있음:</p>
+<pre class="codehilite"><code class="language-js">// src/core/AssetConfig.js
+pickRandomFlowerKey() {
+  const keys = ['A', 'B', 'C'];  // ← 여기에 'D' 추가
+  return keys[Math.floor(Math.random() * keys.length)];
+}
+</code></pre>
+
+<p>config에 <code>D</code> 플라워 정의 추가:</p>
+<pre class="codehilite"><code class="language-json">&quot;flowers&quot;: {
+  &quot;A&quot;: { ... }, &quot;B&quot;: { ... }, &quot;C&quot;: { ... },
+  &quot;D&quot;: { &quot;bloomVideo&quot;: &quot;...&quot;, &quot;card&quot;: &quot;...&quot; }
+}
+</code></pre>
+
+<h3 id="103">10.3 새로운 인터랙션 단계 추가</h3>
+<p>예: Card 이후에 "공유" 단계 추가.</p>
+<p><strong>1. 상태 클래스 작성</strong> (<code>src/states/ShareState.js</code>):</p>
+<pre class="codehilite"><code class="language-js">import { BaseState } from './BaseState.js';
+
+export class ShareState extends BaseState {
+  constructor() { super('share'); }
+
+  async enter(ctx) {
+    await super.enter(ctx);
+    // ... DOM 구성, 인터랙션 로직
+    this.after(10000, () =&gt; this.machine.transition('idle'));
+  }
+
+  async exit() {
+    await super.exit();
+  }
+}
+</code></pre>
+
+<p><strong>2. main.js에 등록</strong>:</p>
+<pre class="codehilite"><code class="language-js">import { ShareState } from './states/ShareState.js';
+
+// ORDER 배열 갱신
+const ORDER = ['idle', 'seedSelect', 'analyzing', 'seedPlant', 'bloom', 'card', 'share'];
+
+fsm.register('share', new ShareState());
+</code></pre>
+
+<p><strong>3. 이전 상태에서 전환 트리거</strong>:</p>
+<pre class="codehilite"><code class="language-js">// CardState.js — 자동 리셋 대신 share로
+this.after(ctx.config.timings.cardResetMs, () =&gt; {
+  this.machine.transition('share');  // ← idle에서 share로
+});
+</code></pre>
+
+<p><strong>4. 타이밍 config 추가</strong> (선택):</p>
+<pre class="codehilite"><code class="language-json">&quot;timings&quot;: {
+  &quot;shareMs&quot;: 10000
+}
+</code></pre>
+
+<h3 id="104">10.4 다른 제스처 추가 (예: "엄지 척")</h3>
+<p><code>HandTracker._step()</code>에서 21개 랜드마크 분석:</p>
+<pre class="codehilite"><code class="language-js">// 엄지가 검지보다 위에 있고 다른 손가락은 접힘
+const thumbUp = hand[4].y &lt; hand[3].y - 0.05;
+const indexCurled = hand[8].y &gt; hand[6].y;
+const middleCurled = hand[12].y &gt; hand[10].y;
+this.state.isThumbUp = thumbUp &amp;&amp; indexCurled &amp;&amp; middleCurled;
+</code></pre>
+
+<p>→ <code>state.isThumbUp</code>을 추가하면 어느 state에서든 observer로 구독 가능.</p>
+<h3 id="105-ui">10.5 새로운 UI 컴포넌트</h3>
+<p><code>src/ui/</code> 에 새 모듈 추가. 규약:</p>
+<ul>
+<li>클래스 또는 export 함수로 노출</li>
+<li>자체 <code>root</code> DOM 노드를 외부에서 mount 가능하게</li>
+<li><code>start() / stop() / dispose()</code> 라이프사이클 제공 (필요 시)</li>
+<li>코어/상태 모듈 import 금지 (단방향 의존성 유지)</li>
+</ul>
+<hr />
+<h2 id="a-dev">부록 A. dev 단축키 (스태프용)</h2>
+<table>
+<thead>
+<tr>
+<th>키</th>
+<th>동작</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>`</code> (백틱)</td>
+<td>dev 오버레이 토글</td>
+</tr>
+<tr>
+<td><code>0</code>–<code>5</code></td>
+<td>상태 강제 점프 (Idle/SeedSelect/Analyzing/SeedPlant/Bloom/Card)</td>
+</tr>
+<tr>
+<td><code>N</code></td>
+<td>다음 상태</td>
+</tr>
+<tr>
+<td><code>R</code></td>
+<td>세션 리셋 → Idle</td>
+</tr>
+<tr>
+<td><code>P</code></td>
+<td>(mock) 포즈 입장 토글</td>
+</tr>
+<tr>
+<td><code>↑/↓</code></td>
+<td>(mock) wristY ±0.05 (Bloom 테스트)</td>
+</tr>
+</tbody>
+</table>
+<p>운영 환경에서는 키보드 비연결 권장. dev 단축키가 의도치 않게 발동 안 함.</p>
+<hr />
+<h2 id="b">부록 B. 에러 처리</h2>
+<h3 id="fatal-error">키오스크 fatal error 발생 시</h3>
+<p><code>StateMachine.transition</code> 실패 → <code>showFatalError()</code> 호출 → 빨간 배경 + 스택 트레이스 전체화면. F12 콘솔에도 출력. 운영 중에는 화면 노출 부담 있음 — 향후 사용자 친화적 에러 화면으로 교체 검토.</p>
+<h3 id="prefix">콘솔 로그 prefix</h3>
+<table>
+<thead>
+<tr>
+<th>Prefix</th>
+<th>출처</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[fsm]</code></td>
+<td>StateMachine 전환</td>
+</tr>
+<tr>
+<td><code>[SeedSelect]</code></td>
+<td>씨앗 선택 단계</td>
+</tr>
+<tr>
+<td><code>[Analyzing]</code></td>
+<td>분석 단계</td>
+</tr>
+<tr>
+<td><code>[SeedPlant]</code></td>
+<td>씨앗 심기 단계</td>
+</tr>
+<tr>
+<td><code>[Bloom]</code></td>
+<td>개화 단계</td>
+</tr>
+<tr>
+<td><code>[Card]</code></td>
+<td>카드 단계</td>
+</tr>
+<tr>
+<td><code>[WebcamFeed]</code></td>
+<td>웹캠 컴포넌트</td>
+</tr>
+<tr>
+<td><code>[HandTracker]</code> <code>[PoseTracker]</code></td>
+<td>MediaPipe 초기화</td>
+</tr>
+<tr>
+<td><code>[Token3D]</code></td>
+<td>Three.js 토큰</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="c">부록 C. 인수인계 체크리스트</h2>
+<ul>
+<li>Netlify 계정 정보 인계 (배포된 모바일 뷰어 사이트 관리)</li>
+<li><code>tokenViewerBase</code> 도메인 인계</li>
+<li><code>config/assets.json</code> 변경 이력 (git history)</li>
+<li>키오스크 PC 원격 접속 정보 (TeamViewer/AnyDesk 등)</li>
+<li>콘텐츠 교체용 SFTP 자격증명</li>
+<li>LGEIHeadline 폰트 라이선스 확인</li>
+<li>운영 매뉴얼 (현장 스태프용) — 별도 문서</li>
+</ul>
+<hr />
+<p><strong>문의 / 이슈 보고</strong>: [개발 담당자 연락처]<br />
+<strong>소스 코드</strong>: [Git 저장소 URL]<br />
+<strong>라이선스</strong>: [내부 사용 / TBD]</p>
+</body>
+</html>

@@ -1,0 +1,109 @@
+/* Mobile token viewer — minimal portrait layout. */
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #ffffff;
+  color: #2a1f3a;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: contain;
+  touch-action: none;
+}
+
+body {
+  font-family: var(--font-stack);
+  font-weight: 400;
+  min-height: 100vh;
+  min-height: 100dvh; /* honors mobile address bar */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 16px 40px;
+  max-width: 100vw;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.3em;
+  color: #6b5e80;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.appliance-info {
+  text-align: center;
+  margin: 0;
+}
+
+.appliance-name {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #2a1f3a;
+  margin: 0;
+}
+
+.appliance-model {
+  font-size: 13px;
+  font-weight: 400;
+  color: #6b5e80;
+  margin: 4px 0 0;
+  letter-spacing: 0;
+  padding: 0 16px;
+}
+
+.token-mount {
+  width: 88vmin;
+  height: 88vmin;
+  max-width: 480px;
+  max-height: 480px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.token-mount canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+.token-mount canvas:active {
+  cursor: grabbing;
+}
+
+.hint {
+  font-size: 13px;
+  font-weight: 400;
+  color: #6b5e80;
+  margin: 4px 0 0;
+}
+
+.save-btn {
+  margin-top: 8px;
+  padding: 14px 32px;
+  background: #2a1f3a;
+  color: #ffffff;
+  border: none;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(120, 60, 180, 0.18);
+}
+.save-btn:active {
+  transform: translateY(1px);
+}

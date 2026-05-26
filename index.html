@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Herb AI Lab</title>
+    <link rel="stylesheet" href="/src/styles/fonts.css" />
+    <link rel="stylesheet" href="/src/styles/main.css" />
+  </head>
+  <body>
+    <div id="stage">
+      <!-- States mount their own root nodes here -->
+    </div>
+
+    <!-- Always-visible state banner. Top-right corner, monospace. Removed for production. -->
+    <div id="state-banner">state: <span id="state-banner-name">booting…</span></div>
+
+    <!-- Hidden webcam video element shared across states.
+         MediaPipe Hands/Pose consume this stream. -->
+    <video id="webcam" playsinline muted autoplay></video>
+
+    <!-- Dev overlay (toggled with the ` key). Hidden in production. -->
+    <div id="dev-overlay" hidden>
+      <div class="row">state: <span id="dev-state">-</span></div>
+      <div class="row">appliance: <span id="dev-appliance">-</span></div>
+      <div class="row">flower: <span id="dev-flower">-</span></div>
+      <div class="row hint">0-5: jump state &middot; n: next &middot; r: reset</div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

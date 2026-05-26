@@ -1,0 +1,20 @@
+{
+  "name": "smart-herb-lab",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "LG x Hongik Smart Herb Lab - interactive 95\" OLED exhibition",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build && node scripts/copy-static.mjs",
+    "preview": "vite preview --host"
+  },
+  "dependencies": {
+    "@mediapipe/tasks-vision": "^0.10.14",
+    "qrcode": "^1.5.4",
+    "three": "^0.166.1"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0"
+  }
+}

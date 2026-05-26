@@ -1,0 +1,28 @@
+/* Local fonts only — no CDN. Both weights load from the same family name so
+   font-weight: 400 / 600 in CSS pick the right face automatically. */
+@font-face {
+  font-family: 'LGEIHeadline';
+  src: url('/assets/fonts/LGEIHeadline-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: 'LGEIHeadline';
+  src: url('/assets/fonts/LGEIHeadline-Semibold.otf') format('opentype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: block;
+}
+
+:root {
+  --font-stack: 'LGEIHeadline', 'Apple SD Gothic Neo', system-ui, sans-serif;
+}
+
+html,
+body,
+button,
+input {
+  font-family: var(--font-stack);
+}

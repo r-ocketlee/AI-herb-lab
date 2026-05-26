@@ -1,0 +1,123 @@
+{
+  "__doc__": "Edit this file only — code never hardcodes filenames. Replace placeholder paths once real assets ship. The keys (`id`, `flowers.A/B/C`) are referenced from code; the file paths next to them are not.",
+  "appliances": [
+    {
+      "id": "air_purifier",
+      "name": "공기청정기",
+      "model": "LG 퓨리케어 AI 오브제컬렉션 에어로퍼니처",
+      "image": "/assets/images/air_purifier.png",
+      "seedVideo": "/assets/videos/seed/seed-planting.mp4",
+      "flowers": {
+        "A": {
+          "bloomVideo": "/assets/videos/bloom/air_purifier.mp4",
+          "card": "/assets/cards/placeholder_air_purifier_A.png"
+        },
+        "B": {
+          "bloomVideo": "/assets/videos/bloom/air_purifier.mp4",
+          "card": "/assets/cards/placeholder_air_purifier_B.png"
+        },
+        "C": {
+          "bloomVideo": "/assets/videos/bloom/air_purifier.mp4",
+          "card": "/assets/cards/placeholder_air_purifier_C.png"
+        }
+      }
+    },
+    {
+      "id": "dehumidifier",
+      "name": "제습기",
+      "model": "LG 휘센 오브제컬렉션 제습기",
+      "image": "/assets/images/dehumidifier.png",
+      "seedVideo": "/assets/videos/seed/seed-planting.mp4",
+      "flowers": {
+        "A": {
+          "bloomVideo": "/assets/videos/bloom/dehumidifier.mp4",
+          "card": "/assets/cards/placeholder_dehumidifier_A.png"
+        },
+        "B": {
+          "bloomVideo": "/assets/videos/bloom/dehumidifier.mp4",
+          "card": "/assets/cards/placeholder_dehumidifier_B.png"
+        },
+        "C": {
+          "bloomVideo": "/assets/videos/bloom/dehumidifier.mp4",
+          "card": "/assets/cards/placeholder_dehumidifier_C.png"
+        }
+      }
+    },
+    {
+      "id": "speaker",
+      "name": "스피커",
+      "model": "LG 엑스붐 360",
+      "image": "/assets/images/speaker.png",
+      "seedVideo": "/assets/videos/seed/seed-planting.mp4",
+      "flowers": {
+        "A": {
+          "bloomVideo": "/assets/videos/bloom/speaker.mp4",
+          "card": "/assets/cards/placeholder_speaker_A.png"
+        },
+        "B": {
+          "bloomVideo": "/assets/videos/bloom/speaker.mp4",
+          "card": "/assets/cards/placeholder_speaker_B.png"
+        },
+        "C": {
+          "bloomVideo": "/assets/videos/bloom/speaker.mp4",
+          "card": "/assets/cards/placeholder_speaker_C.png"
+        }
+      }
+    },
+    {
+      "id": "refrigerator",
+      "name": "냉장고",
+      "model": "LG 일반냉장고 오브제컬렉션",
+      "image": "/assets/images/refrigerator.png",
+      "seedVideo": "/assets/videos/seed/seed-planting.mp4",
+      "flowers": {
+        "A": {
+          "bloomVideo": "/assets/videos/bloom/placeholder_refrigerator_A.mp4",
+          "card": "/assets/cards/placeholder_refrigerator_A.png"
+        },
+        "B": {
+          "bloomVideo": "/assets/videos/bloom/placeholder_refrigerator_B.mp4",
+          "card": "/assets/cards/placeholder_refrigerator_B.png"
+        },
+        "C": {
+          "bloomVideo": "/assets/videos/bloom/placeholder_refrigerator_C.mp4",
+          "card": "/assets/cards/placeholder_refrigerator_C.png"
+        }
+      }
+    },
+    {
+      "id": "washer",
+      "name": "세탁기",
+      "model": "LG 트롬 오브제컬렉션 세탁기",
+      "image": "/assets/images/washer.png",
+      "seedVideo": "/assets/videos/seed/seed-planting.mp4",
+      "flowers": {
+        "A": {
+          "bloomVideo": "/assets/videos/bloom/placeholder_washer_A.mp4",
+          "card": "/assets/cards/placeholder_washer_A.png"
+        },
+        "B": {
+          "bloomVideo": "/assets/videos/bloom/placeholder_washer_B.mp4",
+          "card": "/assets/cards/placeholder_washer_B.png"
+        },
+        "C": {
+          "bloomVideo": "/assets/videos/bloom/placeholder_washer_C.mp4",
+          "card": "/assets/cards/placeholder_washer_C.png"
+        }
+      }
+    }
+  ],
+  "timings": {
+    "__doc__": "Tune freely. cardResetMs is the post-bloom showcase window where the visitor can flip the token and scan the QR.",
+    "idleEntryDwellMs": 2500,
+    "seedSelectDwellMs": 5000,
+    "analyzingMs": 5000,
+    "cardResetMs": 30000
+  },
+  "tokenFront": "/assets/images/token-front.png",
+  "tokenViewerBase": "https://smart-herb-lab.netlify.app/token.html",
+  "detection": {
+    "shoulderWidthEnterThreshold": 0.22,
+    "shoulderWidthExitThreshold": 0.14
+  }
+}
