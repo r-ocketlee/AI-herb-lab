@@ -1,0 +1,11 @@
+# Netlify deploy config for the AI Herb Lab certificate site.
+# Serves the built kiosk/cert pages (dist/) + the photo upload/serve functions.
+# The kiosk runs LOCALLY (Chrome on the kiosk PC); this deploy only provides the
+# mobile certificate page (token.html) and the photo backend the kiosk POSTs to.
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+[functions]
+  node_bundler = "esbuild"

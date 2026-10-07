@@ -3,26 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
-    <meta name="theme-color" content="#ffffff" />
-    <title>나의 Smart Herb 토큰</title>
+    <meta name="theme-color" content="#080808" />
+    <title>AI Herb Lab · 씨앗 분양 증서</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap" />
     <link rel="stylesheet" href="/src/styles/fonts.css" />
     <link rel="stylesheet" href="/src/styles/token.css" />
   </head>
   <body>
-    <main id="stage">
-      <h1 id="title" class="title">Smart Herb AI Lab</h1>
-      <div id="appliance-info" class="appliance-info">
-        <p id="appliance-name" class="appliance-name">나의 가전</p>
-        <p id="appliance-model" class="appliance-model"></p>
-      </div>
-
-      <!-- Token3D renderer mounts inside here -->
-      <div id="token-mount" class="token-mount"></div>
-
-      <p id="hint" class="hint">손가락으로 토큰을 돌려보세요</p>
-
-      <button id="save-btn" class="save-btn" hidden>이미지로 저장</button>
-    </main>
+    <main id="receipt"></main>
     <script type="module" src="/src/token-main.js"></script>
   </body>
 </html>

@@ -103,7 +103,7 @@ function drawCircularText(ctx, text, opts) {
   if (!text) return;
   ctx.save();
   ctx.fillStyle = color;
-  ctx.font = `${fontWeight} ${fontSize}px LGEIHeadline, 'Apple SD Gothic Neo', sans-serif`;
+  ctx.font = `${fontWeight} ${fontSize}px LGEIHeadline, 'Pretendard', sans-serif`;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
 

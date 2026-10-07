@@ -1,109 +1,66 @@
-/* Mobile token viewer — minimal portrait layout. */
+/* Mobile certificate (receipt-style "Certificate of Adoption"). Reached by QR.
+   Black screen; a per-appliance-colored paper prints slowly down from the top.
+   English = Helvetica (-> Arimo -> Arial), Korean = Pretendard. Portrait + bloom
+   are real photos rendered as grayscale (drawn on canvas by token-main). */
 
 * { box-sizing: border-box; }
+
+:root { --ink: #0c0a18; --paper: #BAB5E3; }
+
 html, body {
-  margin: 0;
-  padding: 0;
-  background: #ffffff;
-  color: #2a1f3a;
+  margin: 0; padding: 0; background: #080808; color: #fff;
   -webkit-tap-highlight-color: transparent;
-  overscroll-behavior: contain;
-  touch-action: none;
+  font-family: 'Helvetica Neue', Helvetica, 'Arimo', 'Pretendard', Arial, sans-serif;
+  font-variant-numeric: tabular-nums; word-break: keep-all;
 }
 
-body {
-  font-family: var(--font-stack);
-  font-weight: 400;
-  min-height: 100vh;
-  min-height: 100dvh; /* honors mobile address bar */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+#receipt { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px 26px 22px; overflow-x: hidden; }
+.rc-error { color: #fff; opacity: .8; text-align: center; padding: 3rem 1rem; }
 
-#stage {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  padding: 24px 16px 40px;
-  max-width: 100vw;
-}
+.rc-slot { width: 100%; max-width: 300px; height: 16px; position: relative; }
+.rc-slot::after { content: ""; position: absolute; left: 0; right: 0; top: 7px; height: 3px; background: #000; border-radius: 2px; }
 
-.title {
-  font-size: 14px;
-  font-weight: 400;
-  letter-spacing: 0.3em;
-  color: #6b5e80;
-  margin: 0;
-  text-transform: uppercase;
-}
+/* capture target for "save as image" - html2canvas paints a black bg behind it */
+.cert-shot { width: 100%; max-width: 300px; padding: 11px; }
 
-.appliance-info {
-  text-align: center;
-  margin: 0;
+.rc-paper {
+  background-color: var(--paper); color: var(--ink); padding: 20px 20px 17px; position: relative;
+  transform: translateY(-104%); transition: transform 2s cubic-bezier(.2, .8, .2, 1);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, .55);
 }
+#receipt.is-printed .rc-paper { transform: translateY(0); }
 
-.appliance-name {
-  font-size: 22px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: #2a1f3a;
-  margin: 0;
-}
+.rc-hero { font-weight: 700; font-size: 28px; line-height: 1; letter-spacing: -1px; text-align: center; margin: 0; }
+.rc-hero sup { font-size: 9px; font-weight: 600; vertical-align: super; }
+.rc-sub { text-align: center; margin: 7px 0 11px; }
+.rc-sub .en { font-size: 10.5px; letter-spacing: 1.3px; font-weight: 700; }
+.rc-sub .ko { font-size: 10px; letter-spacing: 1px; opacity: .7; margin-top: 3px; }
+.rc-rule { border-top: 1px solid rgba(12, 10, 24, .38); margin: 10px 0; }
 
-.appliance-model {
-  font-size: 13px;
-  font-weight: 400;
-  color: #6b5e80;
-  margin: 4px 0 0;
-  letter-spacing: 0;
-  padding: 0 16px;
-}
+.rc-fields { font-size: 10.5px; line-height: 1.65; }
+.rc-fields > div { display: flex; }
+.rc-fields span { width: 98px; flex: 0 0 auto; opacity: .6; letter-spacing: .3px; }
+.rc-fields b { font-weight: 700; }
 
-.token-mount {
-  width: 88vmin;
-  height: 88vmin;
-  max-width: 480px;
-  max-height: 480px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  user-select: none;
-  -webkit-user-select: none;
-}
+.rc-photos { display: flex; gap: 12px; justify-content: center; margin-top: 2px; }
+.rc-fig { width: 39%; text-align: center; }
+.rc-cap { font-size: 7.5px; letter-spacing: 2px; opacity: .6; margin-bottom: 5px; font-weight: 700; }
+.rc-ht { width: 100%; aspect-ratio: 1; border-radius: 50%; overflow: hidden; background: rgba(12, 10, 24, .06);
+  display: flex; align-items: center; justify-content: center; }
+.rc-ht canvas { width: 100%; height: 100%; display: block; }
+.rc-ht[data-slot="bloom"] { border: 1px solid rgba(12, 10, 24, .45); }
+.rc-ph { font-size: 8px; letter-spacing: 2px; opacity: .5; }
 
-.token-mount canvas {
-  display: block;
-  width: 100%;
-  height: 100%;
-  cursor: grab;
-}
-.token-mount canvas:active {
-  cursor: grabbing;
-}
+.rc-statement { font-size: 9.5px; line-height: 1.65; text-align: center; opacity: .82; margin: 11px 0 0; }
+.rc-barcode { height: 20px; margin: 11px 0 6px;
+  background: repeating-linear-gradient(90deg, #0c0a18 0 1.5px, transparent 1.5px 3px, #0c0a18 3px 5px, transparent 5px 7px, #0c0a18 7px 8px, transparent 8px 11px, #0c0a18 11px 13px, transparent 13px 15px, #0c0a18 15px 18px, transparent 18px 20px); }
+.rc-id { font-size: 9px; letter-spacing: 1.8px; text-align: center; opacity: .8; margin: 0; }
+.rc-issuer { font-size: 8.5px; letter-spacing: .5px; text-align: center; opacity: .6; margin: 4px 0 0; }
 
-.hint {
-  font-size: 13px;
-  font-weight: 400;
-  color: #6b5e80;
-  margin: 4px 0 0;
-}
-
-.save-btn {
-  margin-top: 8px;
-  padding: 14px 32px;
-  background: #2a1f3a;
-  color: #ffffff;
-  border: none;
-  border-radius: 999px;
-  font-family: inherit;
-  font-size: 15px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  cursor: pointer;
-  box-shadow: 0 8px 24px rgba(120, 60, 180, 0.18);
-}
-.save-btn:active {
-  transform: translateY(1px);
-}
+.rc-actions { width: 100%; max-width: 300px; display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.rc-btn { display: block; width: 100%; text-align: center; padding: 12px; border-radius: 11px; border: none;
+  font-family: inherit; font-size: 14px; font-weight: 700; text-decoration: none; cursor: pointer; letter-spacing: .01em; }
+.rc-btn--save { background: #fff; color: #111; }
+.rc-btn--save:disabled { opacity: .6; }
+.rc-btn--lg { background: transparent; color: #fff; border: 1px solid rgba(255, 255, 255, .35); font-weight: 500; }
+.rc-btn--lg:active, .rc-btn--save:active { transform: translateY(1px); }

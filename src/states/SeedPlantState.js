@@ -3,6 +3,9 @@
 // after a short fallback timeout so the kiosk never sticks).
 
 import { BaseState } from './BaseState.js';
+import { RevealText } from '../ui/RevealText.js';
+
+const GUIDE_TEXT = 'AI Herb를 가전에 심는 중입니다';
 
 export class SeedPlantState extends BaseState {
   constructor() {
@@ -11,12 +14,17 @@ export class SeedPlantState extends BaseState {
 
   async enter(ctx) {
     await super.enter(ctx);
+    this.pauseTrackers(); // passive seed-planting video — no hand/presence input needed
     const appliance = ctx.config.getAppliance(ctx.session.applianceId);
-    Object.assign(this.root.style, { background: '#ffffff' });
+    // Black, not white — AnalyzingState ends on pure black, and this state
+    // opens with a video on a black backdrop. Keeping every layer black
+    // makes the analyzing → seedPlant hand-off read as one continuous
+    // dark beat instead of flashing bright in between.
+    Object.assign(this.root.style, { background: '#000000' });
 
-    // Append video FIRST (sits at the bottom of the stack). Placeholder goes
-    // on top — opaque white, so the empty black <video> doesn't leak through
-    // while no real asset is loaded. It fades out once playback truly starts.
+    // Seed-planting cue — plays from the top the moment this part begins.
+    ctx.audio?.play('seed');
+
     const video = document.createElement('video');
     Object.assign(video.style, {
       position: 'absolute',
@@ -33,39 +41,28 @@ export class SeedPlantState extends BaseState {
     this.root.appendChild(video);
     this.video = video;
 
-    const placeholder = document.createElement('div');
-    Object.assign(placeholder.style, {
-      position: 'absolute',
-      inset: '0',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      flexDirection: 'column',
-      gap: '24px',
-      background: '#ffffff',
-      color: '#2a1f3a',
-      textAlign: 'center',
-      pointerEvents: 'none',
-      transition: 'opacity 400ms ease',
-      zIndex: '5',
-      opacity: '1',
-      boxShadow: 'inset 0 0 0 6px #EAA0FF',
-    });
-    placeholder.innerHTML = `
-      <div style="font-size:13px;letter-spacing:0.4em;color:#EAA0FF;font-weight:600">— PLACEHOLDER —</div>
-      <div style="font-size:48px;font-weight:600;letter-spacing:-0.02em;color:#2a1f3a">씨앗 심기 영상</div>
-      <div style="font-size:18px;color:#6b5e80;font-weight:400">${appliance?.name ?? '가전'}</div>
-      <div style="font-size:14px;color:#6b5e80;font-weight:400;opacity:0.75">${appliance?.model ?? ''}</div>
-    `;
-    this.root.appendChild(placeholder);
-    this.placeholder = placeholder;
+    // Top guide morphs in while the seed-planting video plays underneath.
+    // Same .guide-top / RevealText pattern as SeedSelect / Bloom / Card
+    // for a consistent voice.
+    const guideEl = document.createElement('p');
+    guideEl.className = 'guide-top';
+    guideEl.style.zIndex = '20'; // sit above the video
+    // White text over the dark video — invert .guide-top's defaults.
+    guideEl.style.color = '#ffffff';
+    guideEl.style.textShadow = '0 2px 24px rgba(0, 0, 0, 0.55), 0 0 36px rgba(0, 0, 0, 0.35)';
+    this.root.appendChild(guideEl);
+    this.guideMorph = new RevealText({ mode: 'fade' });
+    guideEl.appendChild(this.guideMorph.root);
+    this.guideMorph.setInitial('');
+    requestAnimationFrame(() => this.guideMorph.morphTo(GUIDE_TEXT));
+    this._disposers.push(() => this.guideMorph?.stop());
 
     let advanced = false;
     const advance = () => {
       if (advanced) return;
       advanced = true;
       console.log('[SeedPlant] advancing → bloom');
-      this.machine.transition('bloom');
+      this.advanceOrIdle(ctx, 'bloom'); // [1] release to Idle if nobody's here
     };
 
     // Let the video play to its natural end — no forced cutoff. A long
@@ -77,10 +74,13 @@ export class SeedPlantState extends BaseState {
       advance();
     });
 
-    video.addEventListener('playing', () => {
-      placeholder.style.opacity = '0';
-    }, { once: true });
     video.addEventListener('ended', advance, { once: true });
+    // Duration-based fallback — some HEVC clips never fire 'ended'; advance
+    // shortly after the clip's own length so we never hang on the 60s net.
+    video.addEventListener('loadedmetadata', () => {
+      const d = video.duration;
+      if (isFinite(d) && d > 0) this.after(d * 1000 + 1500, advance);
+    }, { once: true });
     video.addEventListener('error', () => {
       console.warn('[SeedPlant] video error — advancing in 3s');
       this.after(3000, advance);
@@ -88,12 +88,26 @@ export class SeedPlantState extends BaseState {
 
     // Fire-and-forget — don't let a slow/stalled play() block enter().
     video.play().catch((err) => {
-      console.warn('[SeedPlant] play() rejected, keeping placeholder', err);
+      console.warn('[SeedPlant] play() rejected', err);
     });
   }
 
   async exit() {
+    // Restore the stage background AnalyzingState painted black for the
+    // dark hand-off — Bloom and everything after run on light roots again.
+    const stage = document.getElementById('stage');
+    if (stage) stage.style.background = '';
+
+    // Cut the seed cue so it doesn't bleed into Bloom (which starts its own).
+    this.ctx?.audio?.stop('seed');
+
+    // Grow cue — fires the instant the "…심는 중입니다" guide starts clearing,
+    // bridging the seed→bloom transition. Stopped again in BloomState.exit so
+    // it doesn't carry into the ending.
+    this.ctx?.audio?.play('grow');
+
     this.video?.pause();
+    await this.morphOutGuide();
     await super.exit();
   }
 }

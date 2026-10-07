@@ -14,8 +14,26 @@
 const REPEATS = 22;             // 5 appliances × 22 = 110 nodes
 const RADIUS = 1500;
 const CAM_DISTANCE = 1150;
-const BASE_ITEM_SIZE = 280;
+const BASE_ITEM_SIZE = 340;
 const CENTER_SCALE = 1.55;
+
+// Per-appliance proximity glow colors (subtle pastel tints behind the icon
+// when the seed hovers near it). Values are pre-formatted `r, g, b` strings
+// so the alpha can be appended at render time. Fallback used if id missing.
+const APPLIANCE_GLOW = {
+  washer:        '158, 255, 214',  // #9EFFD6 mint
+  refrigerator:  '156, 201, 240',  // #9CC9F0 sky
+  speaker:       '186, 181, 227',  // #BAB5E3 lavender
+  dehumidifier:  '248, 196, 222',  // #F8C4DE pink
+  air_purifier:  '177, 248, 255',  // #B1F8FF cyan
+};
+const DEFAULT_GLOW_RGB = '255, 235, 200'; // warm cream
+
+// Exposed so other UI (e.g. SeedSelect's dwell gauge) can tint itself to match
+// an appliance's identity color. Returns an `r, g, b` string.
+export function applianceGlowRgb(id) {
+  return APPLIANCE_GLOW[id] ?? DEFAULT_GLOW_RGB;
+}
 
 const SMOOTHING = 0.18;         // lerp factor for rotation toward target (snappier follow)
 const ROTATE_GAIN_X = 0.0024;   // hand-pixel → target Y rotation (lowered)
@@ -174,6 +192,7 @@ export class SphereCarousel {
     this.running = true;
     const loop = () => {
       if (!this.running) return;
+      try {
 
       // Continuous angular-velocity integration (seed-driven mode).
       if (!this.locked) {
@@ -202,6 +221,9 @@ export class SphereCarousel {
       this.rotX += (this.targetRotX - this.rotX) * SMOOTHING;
       this.rotY += (this.targetRotY - this.rotY) * SMOOTHING;
       this._draw();
+      } catch (e) {
+        console.warn('[SphereCarousel] frame dropped', e);
+      }
       requestAnimationFrame(loop);
     };
     requestAnimationFrame(loop);
@@ -262,6 +284,21 @@ export class SphereCarousel {
     if (this.centerKey == null) return null;
     const node = this.nodes.find((n) => n.slotId === this.centerKey);
     return node?.appliance ?? null;
+  }
+
+  // Soft snap — eases the currently-centered (nearest-to-front) node toward
+  // true center by `strength` each frame. Called by SeedSelectState when the
+  // visitor's hand stops rotating, so the carousel settles neatly onto an
+  // appliance instead of drifting between two. Uses the SHORTEST-PATH Y delta
+  // (wrapped to ±π) so it never unwinds the accumulated continuous rotation.
+  softSnapToCenter(strength = 0.06) {
+    if (this.locked) return;
+    const snap = this._computeSnapAngles();
+    if (!snap) return;
+    let dY = snap.rotY - this.targetRotY;
+    dY = Math.atan2(Math.sin(dY), Math.cos(dY)); // shortest equivalent angle
+    this.targetRotY += dY * strength;
+    this.targetRotX += (snap.rotX - this.targetRotX) * strength;
   }
 
   // Lock rotation onto the currently-centered slot. Used by SeedSelectState
@@ -351,7 +388,20 @@ export class SphereCarousel {
 
       let alpha = (0.12 + 0.78 * depthFactor) * (0.5 + 0.5 * edgeFactor);
       if (isCenter || isHighlight) alpha = 1;
+      else {
+        // Hide the back hemisphere entirely. Items with depth > 0 (behind
+        // the equator) get alpha 0; a small soft band from -0.1R..0 fades
+        // them out cleanly instead of popping as the disc rotates.
+        const backFade = p.depth < -0.1 * RADIUS
+          ? 1
+          : Math.max(0, -p.depth / (0.1 * RADIUS));
+        alpha *= backFade;
+      }
       alpha = Math.max(0, Math.min(1, alpha));
+
+      // Skip drawing entirely if completely transparent — saves the glow,
+      // image, and ring draw calls for invisible back-hemisphere items.
+      if (alpha === 0) continue;
 
       let bonus = 1;
       if (isHighlight) bonus = 1.18 + 0.08 * this._highlightProgress; // 1.18 → 1.26 as gauge fills
@@ -360,13 +410,17 @@ export class SphereCarousel {
       const sizeMul = p.scale * p.node.scaleJitter * edgeScaleFactor * depthScaleFactor;
       const size = BASE_ITEM_SIZE * sizeMul * bonus;
 
-      // Soft warm glow behind a proximity-highlighted item.
+      // Soft per-appliance tinted glow behind a proximity-highlighted item.
+      // Pastel color (mint/sky/lavender/pink/cyan) keyed off the appliance id,
+      // intentionally subtle — max ~0.45 alpha at full dwell so the icon stays
+      // the focus and the glow just colors the air around it.
       if (isHighlight) {
         const glowR = size * 0.95;
+        const rgb = APPLIANCE_GLOW[p.node.appliance.id] ?? DEFAULT_GLOW_RGB;
         const grad = ctx.createRadialGradient(p.sx, p.sy, size * 0.3, p.sx, p.sy, glowR);
-        const intensity = 0.45 + 0.35 * this._highlightProgress;
-        grad.addColorStop(0, `rgba(255, 235, 200, ${intensity})`);
-        grad.addColorStop(0.7, 'rgba(255, 235, 200, 0)');
+        const intensity = 0.22 + 0.22 * this._highlightProgress;
+        grad.addColorStop(0, `rgba(${rgb}, ${intensity})`);
+        grad.addColorStop(0.7, `rgba(${rgb}, 0)`);
         ctx.fillStyle = grad;
         ctx.fillRect(p.sx - glowR, p.sy - glowR, glowR * 2, glowR * 2);
       }
@@ -382,27 +436,9 @@ export class SphereCarousel {
       }
       ctx.globalAlpha = 1;
 
-      // Progress ring around a proximity-highlighted item.
-      if (isHighlight && this._highlightProgress > 0) {
-        const ringR = size * 0.62;
-        ctx.lineWidth = 6;
-        ctx.lineCap = 'round';
-        ctx.strokeStyle = 'rgba(234, 160, 255, 0.25)';
-        ctx.beginPath();
-        ctx.arc(p.sx, p.sy, ringR, 0, Math.PI * 2);
-        ctx.stroke();
-
-        ctx.strokeStyle = '#EAA0FF';
-        ctx.beginPath();
-        ctx.arc(
-          p.sx,
-          p.sy,
-          ringR,
-          -Math.PI / 2,
-          -Math.PI / 2 + this._highlightProgress * Math.PI * 2,
-        );
-        ctx.stroke();
-      }
+      // (The dwell progress ring used to be drawn here, around the item. It now
+      // lives on the SEED instead — see SeedSelectState's dwell gauge — so the
+      // appliance only carries the soft glow + scale-up as "active" feedback.)
     }
 
     const newKey = centerEntry?.node.slotId ?? null;

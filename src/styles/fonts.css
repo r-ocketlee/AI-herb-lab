@@ -16,8 +16,33 @@
   font-display: block;
 }
 
+/* LGEIText — used for the LabFrame instrumentation sub-typography (corner
+   readouts, calibration labels) in place of the system monospace. */
+@font-face {
+  font-family: 'LGEIText';
+  src: url('/assets/fonts/LGEITextTTF-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
+
+/* Pretendard (Medium) — Korean fallback. LGEIHeadline has NO Hangul glyphs, so
+   all Korean fell back to an OS font ('Apple SD Gothic Neo' on macOS, missing on
+   the Windows kiosk → yet another fallback → broken line breaks). Bundling
+   Pretendard locally makes Korean render IDENTICALLY on macOS and Windows.
+   Single weight (Medium) covers the whole 100–900 range so 400/600 requests use
+   this file directly without faux-bold synthesis. Local only — no CDN. */
+@font-face {
+  font-family: 'Pretendard';
+  src: url('/assets/fonts/Pretendard-Medium.otf') format('opentype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: block;
+}
+
 :root {
-  --font-stack: 'LGEIHeadline', 'Apple SD Gothic Neo', system-ui, sans-serif;
+  /* Latin/headlines → LGEIHeadline; Korean (no Hangul in LGEIHeadline) → Pretendard. */
+  --font-stack: 'LGEIHeadline', 'Pretendard', sans-serif;
 }
 
 html,
@@ -25,4 +50,7 @@ body,
 button,
 input {
   font-family: var(--font-stack);
+  /* Korean: break at spaces (eojeol), never mid-word — prevents the awkward
+     line breaks seen when text fell back to a different-metrics OS font. */
+  word-break: keep-all;
 }

@@ -4,3 +4,12 @@ dist
 .vite
 *.log
 .env*
+
+# Chrome kiosk profile data (runtime junk)
+.chrome-kiosk/
+
+# Claude Code local settings (machine-specific)
+.claude/settings.local.json
+
+# Local Netlify folder
+.netlify

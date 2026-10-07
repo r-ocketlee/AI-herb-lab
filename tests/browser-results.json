@@ -1,0 +1,146 @@
+{
+  "results": [
+    {
+      "state": "welcomeGate",
+      "round": 1,
+      "status": {
+        "name": "welcomeGate",
+        "exited": false,
+        "tutorials": 0,
+        "transitions": [
+          "intro"
+        ],
+        "observers": [
+          2,
+          2
+        ],
+        "tokenRect": null,
+        "countdown": null,
+        "guideText": "당신의 AI Herb를 깨워보세요"
+      }
+    },
+    {
+      "state": "welcomeGate",
+      "round": 2,
+      "status": {
+        "name": "welcomeGate",
+        "exited": false,
+        "tutorials": 0,
+        "transitions": [
+          "intro"
+        ],
+        "observers": [
+          2,
+          2
+        ],
+        "tokenRect": null,
+        "countdown": null,
+        "guideText": "당신의 AI Herb를 깨워보세요"
+      }
+    },
+    {
+      "state": "seedSelect",
+      "round": 1,
+      "status": {
+        "name": "seedSelect",
+        "exited": false,
+        "hintActive": true,
+        "seedOpacity": "0.711",
+        "angularVelY": 0,
+        "tutorials": 0,
+        "transitions": [],
+        "observers": [
+          2,
+          2
+        ],
+        "tokenRect": null,
+        "countdown": null,
+        "guideText": "원하는 가전 위에서 손을 잠시 멈춰주세요"
+      }
+    },
+    {
+      "state": "seedSelect",
+      "round": 2,
+      "status": {
+        "name": "seedSelect",
+        "exited": false,
+        "hintActive": true,
+        "seedOpacity": "0.640178",
+        "angularVelY": 0,
+        "tutorials": 0,
+        "transitions": [],
+        "observers": [
+          2,
+          2
+        ],
+        "tokenRect": null,
+        "countdown": null,
+        "guideText": "원하는 가전 위에서 손을 잠시 멈춰주세요"
+      }
+    },
+    {
+      "state": "bloom",
+      "round": 1,
+      "status": {
+        "name": "bloom",
+        "exited": false,
+        "hintActive": false,
+        "tutorials": 0,
+        "transitions": [],
+        "observers": [
+          1,
+          3
+        ],
+        "tokenRect": null,
+        "countdown": null,
+        "guideText": "이제 손을 내려도 괜찮습니다 꽃이 피어납니다손을 천천히 올려 AI Herb를 키워보세요"
+      }
+    },
+    {
+      "state": "bloom",
+      "round": 2,
+      "status": {
+        "name": "bloom",
+        "exited": false,
+        "hintActive": false,
+        "tutorials": 0,
+        "transitions": [],
+        "observers": [
+          1,
+          3
+        ],
+        "tokenRect": null,
+        "countdown": null,
+        "guideText": "이제 손을 내려도 괜찮습니다 꽃이 피어납니다손을 천천히 올려 AI Herb를 키워보세요"
+      }
+    }
+  ],
+  "cardSizes": [
+    {
+      "viewport": {
+        "width": 1920,
+        "height": 1080,
+        "expectedToken": 540
+      },
+      "tokenRect": {
+        "width": 540,
+        "height": 540
+      },
+      "countdown": "30"
+    },
+    {
+      "viewport": {
+        "width": 3840,
+        "height": 2160,
+        "expectedToken": 1080
+      },
+      "tokenRect": {
+        "width": 1080,
+        "height": 1080
+      },
+      "countdown": "30"
+    }
+  ],
+  "errors": [],
+  "external": []
+}

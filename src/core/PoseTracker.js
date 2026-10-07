@@ -8,8 +8,15 @@
 
 import { PoseLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
 
-const MODEL_URL =
-  'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task';
+// `full` (vs the previous `lite`) — noticeably better at detecting people
+// who are farther from the camera / smaller in frame, which matters in the
+// wide exhibition space. Heavier per-frame, but fine on the kiosk GPU.
+// Served locally so hand/pose detection keeps working even with NO internet at
+// the venue (the kiosk must not depend on a CDN). Files live in
+// assets/mediapipe/ and are copied into dist/ by scripts/copy-static.mjs.
+// Still `full` (not `lite`) — deliberately chosen for detecting people farther
+// from the camera in the wide exhibition space.
+const MODEL_URL = '/assets/mediapipe/models/pose_landmarker_full.task';
 
 export class PoseTracker {
   constructor(webcam) {
@@ -56,11 +63,10 @@ export class PoseTracker {
   }
 
   async init() {
+    if (this.fedExternally) return; // worker (TrackerHub) owns inference
     if (this.landmarker) return;
     try {
-      const fileset = await FilesetResolver.forVisionTasks(
-        'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm',
-      );
+      const fileset = await FilesetResolver.forVisionTasks('/assets/mediapipe/wasm');
       this.landmarker = await PoseLandmarker.createFromOptions(fileset, {
         baseOptions: { modelAssetPath: MODEL_URL, delegate: 'GPU' },
         numPoses: 1,
@@ -71,19 +77,33 @@ export class PoseTracker {
     }
   }
 
-  start() {
-    if (this.running) return;
-    this.running = true;
-    const loop = () => {
-      if (!this.running) return;
-      this._step();
-      requestAnimationFrame(loop);
-    };
-    requestAnimationFrame(loop);
-  }
+start() {
+      if (this.running) return;
+      this.running = true;
+      const generation = this._loopGeneration = (this._loopGeneration || 0) + 1;
+      // Worker mode: TrackerHub feeds results via _process(); no own RAF loop.
+      if (this.fedExternally) return;
+      const minInterval = 1000 / 15;   // 15fps로 추론 제한 (숫자만 바꾸면 fps 조절)
+      let last = 0;
+      const loop = (now) => {
+        if (!this.running || this._loopGeneration !== generation) return;
+        try {
+          if (now - last >= minInterval) { last = now; this._step(); }
+        } catch (err) {
+          // A bad camera/GPU frame must not permanently end tracking.
+          console.warn('[PoseTracker] inference frame failed; retrying', err);
+        }
+        if (this.running && this._loopGeneration === generation) {
+          this._rafId = requestAnimationFrame(loop);
+        }
+      };
+      this._rafId = requestAnimationFrame(loop);
+    }
 
   stop() {
     this.running = false;
+    this._loopGeneration = (this._loopGeneration || 0) + 1;
+    cancelAnimationFrame(this._rafId);
   }
 
   observe(fn) {
@@ -95,15 +115,25 @@ export class PoseTracker {
     if (!this.landmarker || !this.webcam?.ready) return;
     const ts = performance.now();
     const result = this.landmarker.detectForVideo(this.webcam.video, ts);
-    const pose = result.landmarks?.[0];
+    this._process(result.landmarks ?? []);
+  }
+
+  // Process raw pose landmarks (array of poses) into the normalized state.
+  // Called by _step (main-thread fallback) or by TrackerHub (worker mode).
+  _process(landmarks) {
+    const pose = landmarks?.[0];
     if (!pose || pose.length < 17) {
-      if (this.state.present) {
+      // Debounce loss so brief detection drops don't flicker presence (which
+      // would falsely trigger the absence guard).
+      this._lost = (this._lost || 0) + 1;
+      if (this._lost > 5 && this.state.present) {
         this.state.present = false;
         this.state.shoulderWidth = 0;
         this._notify();
       }
       return;
     }
+    this._lost = 0;
     // 11 = left shoulder, 12 = right shoulder (MediaPipe indices).
     // 15 = left wrist, 16 = right wrist.
     const ls = pose[11];

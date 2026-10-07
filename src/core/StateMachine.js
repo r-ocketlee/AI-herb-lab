@@ -41,16 +41,17 @@ export class StateMachine {
     console.log(`[fsm] ${prevName ?? '(none)'} → ${name}`);
     try {
       if (prev) {
-        await prev.exit?.(this.ctx);
+        prev.beginExit?.();
         prev.root?.classList.remove('is-active');
-        // Match the .state CSS transition duration so the fade actually
-        // completes before we tear the prev root out of the DOM.
-        await wait(800);
+        // Text and screen leave on the same beat; still wait for cleanup
+        // and the visual fade before reusing a state or accepting input.
+        await Promise.all([prev.exit?.(this.ctx), wait(800)]);
         prev.root?.remove();
       }
       this.currentName = name;
       this.current = next;
       this.ctx.dev?.setState(name);
+      this.ctx.labFrame?.setPhase(name);
       await next.enter?.(this.ctx, payload);
       if (next.root && !next.root.isConnected) {
         document.getElementById('stage').appendChild(next.root);

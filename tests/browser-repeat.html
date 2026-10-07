@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Herb Lab — local regression harness</title>
+<link rel="stylesheet" href="/src/styles/fonts.css">
+<link rel="stylesheet" href="/src/styles/main.css">
+<div id="stage"></div>
+<script type="module">
+// Local test entry only: does not import main.js, access a camera, or upload.
+import { SeedSelectState } from '/src/states/SeedSelectState.js';
+import { BloomState } from '/src/states/BloomState.js';
+import { CardState } from '/src/states/CardState.js';
+import { WelcomeGateState } from '/src/states/WelcomeGateState.js';
+import { AssetConfig } from '/src/core/AssetConfig.js';
+import { PauseOverlay } from '/src/ui/PauseOverlay.js';
+const tracker = () => ({
+  running: true, state: { present: true, x: 0.5, y: 0.5, shoulderWidth: 0.3, wristY: 1, raw: null },
+  observers: new Set(),
+  observe(fn) { this.observers.add(fn); return () => this.observers.delete(fn); },
+  emit(s) { Object.assign(this.state, s); for (const fn of this.observers) fn(this.state); },
+  start() { this.running = true; }, stop() { this.running = false; },
+});
+const config = await AssetConfig.load();
+const ctx = {
+  config, handTracker: tracker(), poseTracker: tracker(),
+  webcam: { video: document.createElement('video'), stream: null, ready: false },
+  cursor: { hide() {}, show() {}, moveTo() {}, setProgress() {} },
+  audio: { stop() {}, play() {}, fadeOut() {} },
+  session: { applianceId: 'speaker', flowerKey: 'A', codenameNum: '07' },
+  setAppliance(id) { this.session.applianceId = id; },
+  setFlower(key) { this.session.flowerKey = key; },
+};
+const states = { welcomeGate: new WelcomeGateState(), seedSelect: new SeedSelectState(), bloom: new BloomState(), card: new CardState() };
+const transitions = [];
+for (const state of Object.values(states)) state.machine = { transition(name) { transitions.push(name); } };
+let current;
+window.qa = {
+  async enter(name) { current = states[name]; transitions.length = 0; await current.enter(ctx); current.root.classList.add('is-active'); },
+  async exit() { current.beginExit(); await current.exit(); current.root.remove(); },
+  hand(s) { ctx.handTracker.emit(s); },
+  pose(s) { ctx.poseTracker.emit(s); },
+  target() {
+    const items = current.carousel?.getProjectedItems?.() ?? [];
+    const front = items.filter((p) => p.depth <= 0.25 * 1500);
+    front.sort((a, b) => Math.hypot(a.sx - innerWidth / 2, a.sy - innerHeight / 2) - Math.hypot(b.sx - innerWidth / 2, b.sy - innerHeight / 2));
+    const p = front[0];
+    return p ? { x: p.sx / innerWidth, y: p.sy / innerHeight } : null;
+  },
+  status() {
+    const tokenRect = current.root.querySelector('.card-token-canvas')?.getBoundingClientRect();
+    return {
+      name: current.name,
+      exited: current._exited,
+      hintActive: current.root.querySelector('.guide-bottom')?.classList.contains('is-on'),
+      seedOpacity: current.seed?.style.opacity,
+      angularVelY: current.carousel?._angVelY,
+      tutorials: current.root.querySelectorAll('.tutorial-card').length,
+      transitions: [...transitions],
+      observers: [ctx.handTracker.observers.size, ctx.poseTracker.observers.size],
+      tokenRect: tokenRect ? { width: tokenRect.width, height: tokenRect.height } : null,
+      countdown: current.root.querySelector('.card-countdown__num')?.textContent ?? null,
+      guideText: current.root.querySelector('.guide-top')?.textContent ?? null,
+    };
+  },
+};
+const previewParams = new URLSearchParams(location.search);
+if (previewParams.has('pause')) {
+  const preview = new PauseOverlay();
+  preview.mount(document.getElementById('stage'));
+} else if (previewParams.has('card')) {
+  await window.qa.enter('card');
+} else if (states[previewParams.get('scene')]) {
+  await window.qa.enter(previewParams.get('scene'));
+}
+</script>
+</html>

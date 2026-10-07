@@ -3,107 +3,72 @@
   "appliances": [
     {
       "id": "air_purifier",
+      "species": "PURI",
+      "paperColor": "#B1F8FF",
+      "productUrl": "https://www.lge.co.kr/air-purifier/as065pwha",
       "name": "공기청정기",
       "model": "LG 퓨리케어 AI 오브제컬렉션 에어로퍼니처",
       "image": "/assets/images/air_purifier.png",
       "seedVideo": "/assets/videos/seed/seed-planting.mp4",
       "flowers": {
-        "A": {
-          "bloomVideo": "/assets/videos/bloom/air_purifier.mp4",
-          "card": "/assets/cards/placeholder_air_purifier_A.png"
-        },
-        "B": {
-          "bloomVideo": "/assets/videos/bloom/air_purifier.mp4",
-          "card": "/assets/cards/placeholder_air_purifier_B.png"
-        },
-        "C": {
-          "bloomVideo": "/assets/videos/bloom/air_purifier.mp4",
-          "card": "/assets/cards/placeholder_air_purifier_C.png"
-        }
+        "A": { "bloomVideo": "/assets/videos/bloom/air_purifier_A.mp4", "card": "/assets/cards/air_purifier_A.jpg" },
+        "B": { "bloomVideo": "/assets/videos/bloom/air_purifier_B.mp4", "card": "/assets/cards/air_purifier_B.jpg" }
       }
     },
     {
       "id": "dehumidifier",
+      "species": "ARID",
+      "paperColor": "#F8C4DE",
+      "productUrl": "https://www.lge.co.kr/dehumidifiers/dq235mwga?sKwd=LG%20%ED%9C%98%EC%84%BC%20%EC%98%A4%EB%B8%8C%EC%A0%9C%EC%BB%AC%EB%A0%89%EC%85%98%20%EC%A0%9C%EC%8A%B5%EA%B8%B0&sTab=unit_product_list&sRank=4",
       "name": "제습기",
       "model": "LG 휘센 오브제컬렉션 제습기",
       "image": "/assets/images/dehumidifier.png",
       "seedVideo": "/assets/videos/seed/seed-planting.mp4",
       "flowers": {
-        "A": {
-          "bloomVideo": "/assets/videos/bloom/dehumidifier.mp4",
-          "card": "/assets/cards/placeholder_dehumidifier_A.png"
-        },
-        "B": {
-          "bloomVideo": "/assets/videos/bloom/dehumidifier.mp4",
-          "card": "/assets/cards/placeholder_dehumidifier_B.png"
-        },
-        "C": {
-          "bloomVideo": "/assets/videos/bloom/dehumidifier.mp4",
-          "card": "/assets/cards/placeholder_dehumidifier_C.png"
-        }
+        "A": { "bloomVideo": "/assets/videos/bloom/dehumidifier_A.mp4", "card": "/assets/cards/dehumidifier_A.jpg" },
+        "B": { "bloomVideo": "/assets/videos/bloom/dehumidifier_A.mp4", "card": "/assets/cards/dehumidifier_A.jpg" }
       }
     },
     {
       "id": "speaker",
+      "species": "ECHO",
+      "paperColor": "#BAB5E3",
+      "productUrl": "https://www.lge.co.kr/home-audio/xo2t-be?sKwd=%EC%97%91%EC%8A%A4%EB%B6%90&sTab=unit_product_list&sRank=1",
       "name": "스피커",
       "model": "LG 엑스붐 360",
       "image": "/assets/images/speaker.png",
       "seedVideo": "/assets/videos/seed/seed-planting.mp4",
       "flowers": {
-        "A": {
-          "bloomVideo": "/assets/videos/bloom/speaker.mp4",
-          "card": "/assets/cards/placeholder_speaker_A.png"
-        },
-        "B": {
-          "bloomVideo": "/assets/videos/bloom/speaker.mp4",
-          "card": "/assets/cards/placeholder_speaker_B.png"
-        },
-        "C": {
-          "bloomVideo": "/assets/videos/bloom/speaker.mp4",
-          "card": "/assets/cards/placeholder_speaker_C.png"
-        }
+        "A": { "bloomVideo": "/assets/videos/bloom/speaker_A.mp4", "card": "/assets/cards/speaker_A.jpg" },
+        "B": { "bloomVideo": "/assets/videos/bloom/speaker_B.mp4", "card": "/assets/cards/speaker_B.jpg" }
       }
     },
     {
       "id": "refrigerator",
+      "species": "FROST",
+      "paperColor": "#9CC9F0",
+      "productUrl": "https://www.lge.co.kr/refrigerators/d312mbe31?sKwd=LG%20%EC%9D%BC%EB%B0%98%EB%83%89%EC%9E%A5%EA%B3%A0%20%EC%98%A4%EB%B8%8C%EC%A0%9C%EC%BB%AC%EB%A0%89%EC%85%98&sTab=unit_product_list&sRank=2",
       "name": "냉장고",
       "model": "LG 일반냉장고 오브제컬렉션",
       "image": "/assets/images/refrigerator.png",
       "seedVideo": "/assets/videos/seed/seed-planting.mp4",
       "flowers": {
-        "A": {
-          "bloomVideo": "/assets/videos/bloom/placeholder_refrigerator_A.mp4",
-          "card": "/assets/cards/placeholder_refrigerator_A.png"
-        },
-        "B": {
-          "bloomVideo": "/assets/videos/bloom/placeholder_refrigerator_B.mp4",
-          "card": "/assets/cards/placeholder_refrigerator_B.png"
-        },
-        "C": {
-          "bloomVideo": "/assets/videos/bloom/placeholder_refrigerator_C.mp4",
-          "card": "/assets/cards/placeholder_refrigerator_C.png"
-        }
+        "A": { "bloomVideo": "/assets/videos/bloom/refrigerator_A.mp4", "card": "/assets/cards/refrigerator_A.jpg" },
+        "B": { "bloomVideo": "/assets/videos/bloom/refrigerator_B.mp4", "card": "/assets/cards/refrigerator_B.jpg" }
       }
     },
     {
       "id": "washer",
+      "species": "WSH",
+      "paperColor": "#9EFFD6",
+      "productUrl": "https://www.lge.co.kr/washing-machines/fg24en-akor2?sKwd=LG%20%ED%8A%B8%EB%A1%AC%20%EC%98%A4%EB%B8%8C%EC%A0%9C%EC%BB%AC%EB%A0%89%EC%85%98%20%EC%84%B8%ED%83%81%EA%B8%B0&sTab=unit_product_list&sRank=2",
       "name": "세탁기",
       "model": "LG 트롬 오브제컬렉션 세탁기",
       "image": "/assets/images/washer.png",
       "seedVideo": "/assets/videos/seed/seed-planting.mp4",
       "flowers": {
-        "A": {
-          "bloomVideo": "/assets/videos/bloom/placeholder_washer_A.mp4",
-          "card": "/assets/cards/placeholder_washer_A.png"
-        },
-        "B": {
-          "bloomVideo": "/assets/videos/bloom/placeholder_washer_B.mp4",
-          "card": "/assets/cards/placeholder_washer_B.png"
-        },
-        "C": {
-          "bloomVideo": "/assets/videos/bloom/placeholder_washer_C.mp4",
-          "card": "/assets/cards/placeholder_washer_C.png"
-        }
+        "A": { "bloomVideo": "/assets/videos/bloom/washer_A.mp4", "card": "/assets/cards/washer_A.jpg" },
+        "B": { "bloomVideo": "/assets/videos/bloom/washer_B.mp4", "card": "/assets/cards/washer_B.jpg" }
       }
     }
   ],
@@ -111,13 +76,53 @@
     "__doc__": "Tune freely. cardResetMs is the post-bloom showcase window where the visitor can flip the token and scan the QR.",
     "idleEntryDwellMs": 2500,
     "seedSelectDwellMs": 5000,
-    "analyzingMs": 5000,
+    "analyzingMs": 18000,
     "cardResetMs": 30000
   },
   "tokenFront": "/assets/images/token-front.png",
-  "tokenViewerBase": "https://smart-herb-lab.netlify.app/token.html",
+  "idleVideo": "/assets/videos/idle/idle.mp4",
+  "__seedHeroNote": "Intro 마무리 화면 중앙의 씨앗 메인 비주얼. 이미지(.png/.jpg) 또는 영상(.mp4) 경로. 파일 추가 후 경로만 맞추면 표시됨(없으면 은은한 플레이스홀더 디스크).",
+  "seedHero": "/assets/images/seed-hero.png",
+  "tokenViewerBase": "https://ai-herb-lab.netlify.app/token.html",
+  "photoUpload": { "url": "https://ai-herb-lab.netlify.app/.netlify/functions/upload" },
+  "uploadEndpoint": "https://ai-herb-lab.netlify.app/.netlify/functions/upload",
+  "lgProductUrl": "https://www.lge.co.kr/",
+  "sounds": {
+    "select": "/assets/audio/select.wav",
+    "scan": "/assets/audio/scan.wav",
+    "seed": "/assets/audio/seed.wav",
+    "grow": "/assets/audio/grow.wav",
+    "handdown": "/assets/audio/handdown.wav",
+    "intro1": "/assets/audio/intro/intro1.mp3",
+    "intro2": "/assets/audio/intro/intro2.mp3",
+    "intro3": "/assets/audio/intro/intro3.mp3",
+    "intro4": "/assets/audio/intro/intro4.mp3",
+    "intro5": "/assets/audio/intro/intro5.mp3",
+    "gauge": "/assets/audio/gauge.wav"
+  },
+  "intro": {
+    "slideMs": 5000,
+    "finaleAudio": "intro5",
+    "slides": [
+      {
+        "image": "/assets/images/intro/card2.png",
+        "html": "AI Herb는 씨앗 형태의 미래 홈 허브 가전입니다<br>가전에 심으면 집 안의 모든 가전이 하나로 연결됩니다",
+        "audio": "intro2"
+      },
+      {
+        "image": "/assets/images/intro/card3.png",
+        "html": "씨앗은 나의 생활과 취향을 학습하며 자라나,<br>마침내 나만의 꽃으로 피어납니다",
+        "audio": "intro3"
+      },
+      {
+        "image": "/assets/images/intro/card4.png",
+        "html": "이 꽃은 나를 닮은, 세상에 단 하나뿐인 AI<br>오늘 피운 씨앗을 집으로 가져가면 그곳에서 다시 피어납니다",
+        "audio": "intro4"
+      }
+    ]
+  },
   "detection": {
-    "shoulderWidthEnterThreshold": 0.22,
-    "shoulderWidthExitThreshold": 0.14
+    "shoulderWidthEnterThreshold": 0.13,
+    "shoulderWidthExitThreshold": 0.09
   }
 }

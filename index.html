@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Smart Herb AI Lab</title>
+    <title>AI Herb Lab</title>
     <link rel="stylesheet" href="/src/styles/fonts.css" />
     <link rel="stylesheet" href="/src/styles/main.css" />
   </head>
@@ -12,8 +12,9 @@
       <!-- States mount their own root nodes here -->
     </div>
 
-    <!-- Always-visible state banner. Top-right corner, monospace. Removed for production. -->
-    <div id="state-banner">state: <span id="state-banner-name">booting…</span></div>
+    <!-- State banner. Top-right corner, monospace. Hidden by default;
+         toggled together with the dev overlay via the ` key. -->
+    <div id="state-banner" hidden>state: <span id="state-banner-name">booting…</span></div>
 
     <!-- Hidden webcam video element shared across states.
          MediaPipe Hands/Pose consume this stream. -->

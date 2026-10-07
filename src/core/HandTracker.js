@@ -8,8 +8,9 @@
 
 import { HandLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
 
-const MODEL_URL =
-  'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task';
+// Served locally (no CDN dependency) so detection works offline at the venue.
+// Copied into dist/ by scripts/copy-static.mjs alongside the wasm runtime.
+const MODEL_URL = '/assets/mediapipe/models/hand_landmarker.task';
 
 export class HandTracker {
   constructor(webcam) {
@@ -59,14 +60,15 @@ export class HandTracker {
   }
 
   async init() {
+    if (this.fedExternally) return; // worker (TrackerHub) owns inference
     if (this.landmarker) return;
     try {
-      const fileset = await FilesetResolver.forVisionTasks(
-        'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm',
-      );
+      const fileset = await FilesetResolver.forVisionTasks('/assets/mediapipe/wasm');
       this.landmarker = await HandLandmarker.createFromOptions(fileset, {
         baseOptions: { modelAssetPath: MODEL_URL, delegate: 'GPU' },
-        numHands: 1,
+        // numHands: 2 so we can hold onto the SAME hand across frames (see the
+        // continuity pick in _step) instead of flipping between people.
+        numHands: 2,
         runningMode: 'VIDEO',
       });
     } catch (err) {
@@ -75,18 +77,32 @@ export class HandTracker {
   }
 
   start() {
-    if (this.running) return;
-    this.running = true;
-    const loop = () => {
-      if (!this.running) return;
-      this._step();
-      requestAnimationFrame(loop);
-    };
-    requestAnimationFrame(loop);
+      if (this.running) return;
+      this.running = true;
+      const generation = this._loopGeneration = (this._loopGeneration || 0) + 1;
+      // Worker mode: TrackerHub feeds results via _process(); no own RAF loop.
+      if (this.fedExternally) return;
+      const minInterval = 1000 / 15;   // ← 15fps로 추론 제한 (숫자만 바꾸면 fps 조절)
+      let last = 0;
+      const loop = (now) => {
+        if (!this.running || this._loopGeneration !== generation) return;
+        try {
+          if (now - last >= minInterval) { last = now; this._step(); }
+        } catch (err) {
+          // A bad camera/GPU frame must not permanently end tracking.
+          console.warn('[HandTracker] inference frame failed; retrying', err);
+        }
+        if (this.running && this._loopGeneration === generation) {
+          this._rafId = requestAnimationFrame(loop);
+        }
+      };
+      this._rafId = requestAnimationFrame(loop);
   }
 
   stop() {
     this.running = false;
+    this._loopGeneration = (this._loopGeneration || 0) + 1;
+    cancelAnimationFrame(this._rafId);
   }
 
   observe(fn) {
@@ -98,15 +114,45 @@ export class HandTracker {
     if (!this.landmarker || !this.webcam?.ready) return;
     const ts = performance.now();
     const result = this.landmarker.detectForVideo(this.webcam.video, ts);
-    const hand = result.landmarks?.[0];
-    if (!hand || hand.length < 21) {
-      if (this.state.present) {
+    this._process(result.landmarks ?? []);
+  }
+
+  // Process raw hand landmarks (array of hands) into the normalized state.
+  // Called by _step (main-thread fallback) or by TrackerHub (worker mode).
+  _process(landmarks) {
+    const hands = (landmarks ?? []).filter((h) => h && h.length >= 21);
+    if (hands.length === 0) {
+      // Debounce loss — a brief 1–2 frame miss shouldn't drop tracking.
+      this._lost = (this._lost || 0) + 1;
+      if (this._lost > 6 && this.state.present) {
         this.state.present = false;
         this.state.isPinching = false;
         this._notify();
       }
       return;
     }
+    this._lost = 0;
+
+    // [3] Hysteresis — stick to the SAME hand. While tracking, pick the hand
+    // whose palm is closest to the last position; otherwise the most prominent
+    // (largest) one. Prevents the cursor jumping between people.
+    let hand;
+    if (hands.length === 1) {
+      hand = hands[0];
+    } else if (this.state.present) {
+      let bestD = Infinity;
+      for (const h of hands) {
+        const d = Math.hypot((1 - h[9].x) - this.state.x, h[9].y - this.state.y);
+        if (d < bestD) { bestD = d; hand = h; }
+      }
+    } else {
+      let bestS = -1;
+      for (const h of hands) {
+        const s = Math.hypot(h[0].x - h[12].x, h[0].y - h[12].y);
+        if (s > bestS) { bestS = s; hand = h; }
+      }
+    }
+
     // Index 9 = middle-finger MCP, a stable proxy for palm center.
     const palm = hand[9];
     const thumbTip = hand[4];

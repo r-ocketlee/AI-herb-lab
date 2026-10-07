@@ -1,84 +1,46 @@
-# Smart Herb AI Lab
+# AI Herb Lab
 
-LG전자 × 홍익대 협업 인터랙티브 전시. 95" LG OLED + USB 웹캠 + Windows 미디어서버에서 Chrome 키오스크 모드로 구동되는 웹 기반 경험.
+관람객의 손과 몸짓으로 씨앗을 심고, 키우고, 꽃을 피우는 웹 기반 인터랙티브 전시 프로그램입니다. LG전자 × 홍익대학교 협업 전시를 위해 제작했습니다.
 
-> **관람객 흐름**: 손동작으로 가전을 선택 → AI 분석 연출 → 씨앗 심기 → 손으로 꽃을 피움 → 3D 토큰 카드 + QR로 모바일에 영구 저장
+**[공개 사이트](https://ai-herb-lab.rocketlee.chatgpt.site)**
 
-## Live
+## Experience
 
-- **모바일 토큰 뷰어 (배포됨)**: https://smart-herb-lab.netlify.app/token.html?a=speaker&f=A&d=2026-05-27
-- **키오스크 (로컬 전용)**: `npm run dev` 후 http://localhost:5173
+입장·손 인식 → 5종 미래 가전 선택 → 분석·촬영 연출 → 성장·개화 → QR 분양 증서
 
-## Tech Stack
+웹캠 제스처로 화면을 조작하고, 체험 결과를 모바일 증서로 저장합니다. MediaPipe가 손·신체를 인식하며, 꽃은 사전 제작된 영상 중 무작위로 선택됩니다. 실시간 생성형 AI로 꽃을 만드는 방식은 아닙니다.
 
-- **Vite** 멀티 엔트리 빌드 (키오스크 `index.html` + 모바일 `token.html`)
-- **MediaPipe Tasks Vision** — 손/포즈 실시간 트래킹 (WebGL 2 + GPU delegate)
-- **Three.js** — 3D 토큰 (마지막 카드 단계)
-- **Canvas 2D** — 구형 캐러셀 (110 노드, Fibonacci 분포), 파티클 이펙트
-- **QRCode.js** — 모바일 토큰 페이지 링크 인코딩
-- **LGEIHeadline** 폰트 (로컬 OTF, CDN 없음)
+## Stack
 
-의존성 전체는 `package.json` 참조.
+JavaScript · HTML/CSS · Vite · MediaPipe · Three.js · Canvas · Paper Shaders
+QR/이미지 저장: qrcode · html2canvas / 사진 API: Netlify Functions · Blobs
 
-## Quick Start
+## Run
+
+Node.js와 npm을 설치한 뒤 실행합니다.
 
 ```bash
-# Node.js 18+ 필요
-npm install
-
-# 키오스크 + 모바일 뷰어 동시 dev 서버 (HMR)
+npm ci
 npm run dev
-# → http://localhost:5173            (키오스크)
-# → http://localhost:5173/token.html (모바일 뷰어)
-
-# 프로덕션 빌드
-npm run build
-# → dist/ 폴더 생성 (Netlify/static host에 그대로 업로드)
 ```
 
-## 상태 머신 흐름
+브라우저에서 `http://localhost:5173`을 열고 카메라를 허용하세요. 카메라는 **HTTPS 또는 localhost**에서 사용합니다. 화면만 확인하려면 `N`으로 다음 장면, `R`로 처음으로 돌아갈 수 있습니다.
 
-```
-Idle → SeedSelect → Analyzing → SeedPlant → Bloom → Card → (loop)
- 0       1            2           3           4      5
-```
-
-각 상태는 `src/states/*.js`로 분리. 공유 싱글톤(`HandTracker`, `PoseTracker`, `Webcam`, `AssetConfig`, `AudioManager`)은 `src/core/`.
-
-## 디렉토리 구조 (요약)
-
-```
-smart-herb-lab/
-├── index.html              # 키오스크 엔트리
-├── token.html              # 모바일 토큰 뷰어 엔트리
-├── vite.config.js          # 멀티 엔트리 빌드
-├── src/
-│   ├── main.js             # 키오스크 부트
-│   ├── token-main.js       # 모바일 뷰어 부트
-│   ├── core/               # 상태머신, MediaPipe 래퍼, config 로더
-│   ├── states/             # 6단계 상태 클래스
-│   ├── ui/                 # SphereCarousel, Token3D, WebcamFeed 등
-│   └── styles/             # CSS
-├── assets/                 # 폰트, 가전 이미지, 영상, 카드
-├── config/assets.json      # 가전-꽃 매핑, 타이밍, QR URL 등
-├── scripts/copy-static.mjs # vite build 후 /assets, /config를 dist로 복사
-└── docs/handover.md        # 상세 기술 인수인계 문서
+```bash
+npm test          # 안정성 검사
+npm run build    # dist/ 생성
+npm run preview  # 빌드 결과 확인
 ```
 
-## 주요 문서
+## Maintenance
 
-- **[docs/handover.md](./docs/handover.md)** — 아키텍처, 핵심 모듈 동작, 확장 가이드, 알려진 제약 등 인수인계 풀버전
-- **[docs/handover.pdf](./docs/handover.pdf)** — 위 문서의 PDF 버전 (출력/공유용)
+상태 재진입·인식 루프·지연 콜백 오류를 수정하고, 시작 화면과 안내·전환 모션을 정리했습니다. 콘텐츠와 타이밍은 `config/assets.json`에서 관리합니다.
 
-## 콘텐츠 교체
+GitHub 업데이트와 공개 사이트 배포는 별도입니다. 같은 사이트에 재배포하면 기존 주소가 유지됩니다. 사진·QR 증서는 기존 Netlify 서비스를 사용합니다.
 
-`/assets`에 파일 덮어쓰고 `config/assets.json` 경로 갱신 → Chrome `F5`. 자세한 규격(코덱, 해상도)은 handover 문서 §6 참조.
+[변경 기록](MAINTENANCE-2026-09-22.md) · [배포 안내](docs/deployment.md)
 
-## 배포 환경
+## Credit
 
-- **키오스크**: Windows 10/11 + Chrome 120+ + 95" LG OLED 4K + USB-Optical Extender 웹캠
-- **모바일 뷰어**: Netlify static hosting (`tokenViewerBase` config 한 줄로 도메인 교체 가능)
-
-## License
-
-내부 사용 / TBD
+인터랙션 기획·화면 설계·AI 도구를 활용한 코드 구현·현장 설치: **이수연(Rocket)**
+영상 제작은 별도 참여자가 담당했습니다.

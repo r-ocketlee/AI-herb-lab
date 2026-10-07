@@ -57,8 +57,16 @@ export class Token3D {
     this.rotY = Math.PI;
     this.targetRotX = 0;
     this.targetRotY = Math.PI;
+    // Angular-velocity model on the Y axis — let the coin carry momentum
+    // when the visitor flicks their hand sideways. CardState drives this
+    // via applySpinImpulse(); mobile drag still uses setTargetRotation()
+    // (the lerp branch below ignores angularVelY when it's zero).
+    this.angularVelY = 0;
+    this.spinDamping = 0.95;   // raised: the coin carries momentum longer and glides to a smooth stop (more inertia)
+    this.maxAngularVel = 0.36; // ~20°/frame cap — lowered so a strong flick decelerates smoothly instead of whipping
 
     this.running = false;
+    this._disposed = false;
     this._build(frontImageSrc, backCanvas);
   }
 
@@ -76,6 +84,11 @@ export class Token3D {
     // No crop — the updated PNG already has the orb filling the frame.
     frontTex.center.set(0.5, 0.5);
     frontTex.rotation = Math.PI / 2;
+
+    // If dispose() ran while the texture was loading (visitor left mid-load),
+    // don't build a mesh into an already torn-down renderer — that mesh's
+    // geometry/materials/textures would never be disposed.
+    if (this._disposed) { frontTex.dispose?.(); return; }
 
     const backTex = new THREE.CanvasTexture(backCanvas);
     backTex.colorSpace = THREE.SRGBColorSpace;
@@ -119,13 +132,32 @@ export class Token3D {
     this.running = true;
     const loop = () => {
       if (!this.running) return;
-      // Lighter follow — 0.2 lerp tracks the hand closer to real-time so the
-      // coin feels responsive rather than slowly sloshing into place.
+      try {
+      // X tilt — simple lerp toward the hand-driven target.
       this.rotX += (this.targetRotX - this.rotX) * 0.2;
+
+      // Y rotation = lerp toward absolute target (used by mobile drag)
+      // PLUS accumulated angular velocity (used by the kiosk's flick
+      // model). The momentum is folded into targetRotY each frame so the
+      // lerp doesn't drag the coin back to its pre-impulse target.
       this.rotY += (this.targetRotY - this.rotY) * 0.2;
+      if (this.angularVelY !== 0) {
+        // Clamp before applying so a runaway impulse can't punch through.
+        if (this.angularVelY > this.maxAngularVel) this.angularVelY = this.maxAngularVel;
+        if (this.angularVelY < -this.maxAngularVel) this.angularVelY = -this.maxAngularVel;
+        this.rotY += this.angularVelY;
+        this.targetRotY += this.angularVelY;
+        this.angularVelY *= this.spinDamping;
+        // Floor — kill jitter once the visitor stops moving.
+        if (Math.abs(this.angularVelY) < 0.0005) this.angularVelY = 0;
+      }
+
       this.tokenGroup.rotation.x = this.rotX;
       this.tokenGroup.rotation.y = this.rotY;
       this.renderer.render(this.scene, this.camera);
+      } catch (e) {
+        console.warn('[Token3D] frame dropped', e);
+      }
       requestAnimationFrame(loop);
     };
     requestAnimationFrame(loop);
@@ -140,14 +172,34 @@ export class Token3D {
     this.targetRotY = y;
   }
 
+  // Light-touch APIs for the kiosk hand-driven spin (CardState):
+  //   • setTargetTilt(x) just nudges the X-axis lean
+  //   • applySpinImpulse(impulse) adds rotational momentum on Y
+  // Keeping the two axes separate means the visitor's vertical hand position
+  // never gets in the way of a sideways flick.
+  setTargetTilt(rx) {
+    this.targetRotX = rx;
+  }
+
+  applySpinImpulse(impulse) {
+    this.angularVelY += impulse;
+  }
+
   dispose() {
+    this._disposed = true;
     this.stop();
     this.renderer.dispose();
+    // renderer.dispose() frees GPU resources but NOT the WebGL context itself —
+    // without this, each CardState visit leaks a live context (browsers cap at
+    // ~16), degrading everything after a few cycles.
+    this.renderer.forceContextLoss?.();
     this.scene.traverse((obj) => {
       if (obj.geometry) obj.geometry.dispose?.();
       if (obj.material) {
-        if (Array.isArray(obj.material)) obj.material.forEach((m) => m.dispose?.());
-        else obj.material.dispose?.();
+        const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+        // material.dispose() does NOT free the bound texture (material.map) —
+        // dispose it explicitly, else each token visit leaks a GPU texture.
+        mats.forEach((m) => { m.map?.dispose?.(); m.dispose?.(); });
       }
     });
   }
